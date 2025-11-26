@@ -1,20 +1,17 @@
 {
   pkgs,
-  lib,
   ...
 }:
 let
   username = "christopher.becker";
   userHome = "/Users/christopher.becker";
-  localConfig = ./local.nix;
 in
 {
   imports = [
     ../../bootstrap/darwin.nix
     ../../modules/darwin/defaults.nix
     ../../modules/emacs-macport.nix
-  ]
-  ++ lib.optionals (builtins.pathExists localConfig) [ localConfig ];
+  ];
 
   system.primaryUser = username;
 

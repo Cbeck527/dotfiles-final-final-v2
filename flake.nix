@@ -32,6 +32,10 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
+    nix-config-private = {
+      url = "git+ssh://git@github.com/cbeck527/nix-config-private.git";
+    };
   };
 
   outputs =
@@ -41,6 +45,7 @@
       nix-darwin,
       home-manager,
       nix-homebrew,
+      nix-config-private,
       ...
     }@inputs:
     let
@@ -82,6 +87,7 @@
             { nixpkgs.overlays = builtins.attrValues self.overlays; }
             nix-homebrew.darwinModules.nix-homebrew
             home-manager.darwinModules.home-manager
+            nix-config-private.darwinModules.beckbook-pro
             ./machines/beckbook-pro/default.nix
           ];
         };
@@ -94,6 +100,7 @@
             { nixpkgs.overlays = builtins.attrValues self.overlays; }
             nix-homebrew.darwinModules.nix-homebrew
             home-manager.darwinModules.home-manager
+            nix-config-private.darwinModules.mac-h99xrph3j9
             ./machines/mac-h99xrph3j9/default.nix
           ];
         };

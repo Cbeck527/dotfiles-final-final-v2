@@ -91,6 +91,21 @@
         "type": "github"
       }
     },
+    "nix-config-private": {
+      "locked": {
+        "lastModified": 1764184701,
+        "narHash": "sha256-IcjwKqNImxGxXdFihbV+a6wIeDjnoa10bvQv3BwHc7M=",
+        "ref": "refs/heads/trunk",
+        "rev": "dc7723dd5d482e178549972c24a9f8a61081f57a",
+        "revCount": 1,
+        "type": "git",
+        "url": "ssh://git@github.com/cbeck527/nix-config-private.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/cbeck527/nix-config-private.git"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -184,6 +199,7 @@
         "home-manager": "home-manager",
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",
+        "nix-config-private": "nix-config-private",
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
         "nixpkgs-master": "nixpkgs-master",
