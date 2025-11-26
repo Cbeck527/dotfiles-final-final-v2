@@ -119,6 +119,7 @@
         gh
         go
         hexyl
+        just
         lua-language-server
         nixfmt-rfc-style
         nodejs_24

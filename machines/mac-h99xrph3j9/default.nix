@@ -35,6 +35,7 @@ in
     home.packages = with pkgs; [
       pkgs.pkgs-master.claude-code
       aws-sso-cli
+      terragrunt
 
       nodePackages_latest.prettier
     ];
