@@ -2,3 +2,7 @@ result
 result-*
 
 .direnv
+
+# Machine-specific local config (secrets, certificates, etc.)
+local.nix
+**/local.nix
