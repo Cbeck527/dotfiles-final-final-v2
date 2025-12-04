@@ -19,6 +19,9 @@
 
     trusted-users = [ "@admin" ];
 
+    # Auto-accept nixConfig from flakes (e.g. extra-substituters)
+    accept-flake-config = true;
+
     experimental-features = [
       "nix-command"
       "flakes"
