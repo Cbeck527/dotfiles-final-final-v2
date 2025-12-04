@@ -57,7 +57,7 @@ in
         helper = "osxkeychain";
       };
 
-      aliases = {
+      alias = {
         up = "pull --rebase --autostash";
         rm-merged = "!git branch --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" { print $1 }' | xargs -r git branch -D";
 
