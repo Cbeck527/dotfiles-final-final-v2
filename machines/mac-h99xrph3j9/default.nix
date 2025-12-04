@@ -5,11 +5,16 @@
 let
   username = "christopher.becker";
   userHome = "/Users/christopher.becker";
+  workEmail = "REDACTED";
 in
 {
   imports = [
     ../../bootstrap/darwin.nix
     ../../modules/darwin/defaults.nix
+    ../../modules/darwin/homebrew.nix
+    ../../modules/darwin/services.nix
+    ../../modules/darwin/packages.nix
+    ../../modules/home-manager.nix
     ../../modules/emacs-macport.nix
   ];
 
@@ -28,7 +33,7 @@ in
   custom.homebrew.excludeCasks = [ "contexts" ];
 
   home-manager.users.${username} = {
-    programs.git.settings.user.email = "REDACTED";
+    identity.email = workEmail;
     home.packages = with pkgs; [
       pkgs.pkgs-master.claude-code
       aws-sso-cli
