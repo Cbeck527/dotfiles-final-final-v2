@@ -6,6 +6,9 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
 
+    # Pinned for terraform 1.5.7 (last MPL-licensed version)
+    nixpkgs-terraform-157.url = "github:nixos/nixpkgs/9204ded9bd5d64ccff9341c6f9eb4407ed6f1c01";
+
     nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -73,6 +76,13 @@
             inherit (prev.stdenv.hostPlatform) system;
             config.allowUnfree = true;
           };
+        };
+
+        terraform-157 = _: prev: {
+          terraform_1_5_7 =
+            (import inputs.nixpkgs-terraform-157 {
+              inherit (prev.stdenv.hostPlatform) system;
+            }).terraform_1;
         };
 
         fenix = fenix.overlays.default;

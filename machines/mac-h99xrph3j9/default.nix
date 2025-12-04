@@ -34,9 +34,11 @@ in
 
   home-manager.users.${username} = {
     identity.email = workEmail;
+
     home.packages = with pkgs; [
       pkgs.pkgs-master.claude-code
       aws-sso-cli
+      terraform_1_5_7
       terragrunt
 
       nodePackages_latest.prettier

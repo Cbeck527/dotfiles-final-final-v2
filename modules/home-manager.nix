@@ -148,7 +148,6 @@
         k9s
         kubectl
         kubernetes-helm
-        terraform
 
         # Languages / LSP
         astro-language-server
