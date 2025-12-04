@@ -70,7 +70,6 @@
       home.packages = with pkgs; [
         # Shell & Terminal
         aspell
-        atuin
         bat
         btop
         cowsay

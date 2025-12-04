@@ -4,14 +4,7 @@
 }:
 
 {
-  imports = [
-    ./homebrew.nix
-    ./services.nix
-    ./packages.nix
-    ../home-manager.nix
-  ];
-
-  #package config
+  # package config
   nixpkgs = {
     config = {
       allowUnfree = true;
@@ -49,20 +42,11 @@
       # fonts
       nerd-fonts.symbols-only
       ibm-plex
-
-    ];
-    shells = with pkgs; [
-      fish
-      bashInteractive
     ];
   };
 
   programs = {
     fish.enable = true;
-  };
-
-  services.caffeinate = {
-    enable = true;
   };
 
   system.defaults = {

@@ -11,6 +11,10 @@ in
   imports = [
     ../../bootstrap/darwin.nix
     ../../modules/darwin/defaults.nix
+    ../../modules/darwin/homebrew.nix
+    ../../modules/darwin/services.nix
+    ../../modules/darwin/packages.nix
+    ../../modules/home-manager.nix
     ../../modules/emacs-macport.nix
   ];
 
