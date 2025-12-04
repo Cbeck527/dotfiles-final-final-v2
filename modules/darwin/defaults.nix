@@ -38,12 +38,13 @@
       coreutils
       fish
       home-manager
-
-      # fonts
-      nerd-fonts.symbols-only
-      ibm-plex
     ];
   };
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.symbols-only
+    ibm-plex
+  ];
 
   programs = {
     fish.enable = true;
