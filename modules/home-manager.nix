@@ -28,11 +28,15 @@
 
       programs.fish = {
         enable = true;
+        interactiveShellInit = ''
+          if test -f ~/.localrc.fish
+            source ~/.localrc.fish
+          end
+        '';
       };
 
       programs.direnv = {
         enable = true;
-        # enableFishIntegration = true;
         config = {
           global = {
             load_dotenv = true;
