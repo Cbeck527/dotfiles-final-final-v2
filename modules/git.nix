@@ -1,20 +1,17 @@
 {
   pkgs,
   lib,
+  config,
   ...
 }:
 
-let
-  gitEmail = lib.mkDefault "chris@becker.am";
-  gitSigningKey = lib.mkDefault "FBC98F20D0EB443EA67B41C170FA7961EA5F66A9";
-in
 {
   programs.git = {
     enable = true;
 
     settings = {
-      user.name = "Chris Becker";
-      user.email = gitEmail;
+      user.name = config.identity.name;
+      user.email = config.identity.email;
 
       core = {
         editor = "emacsclient";
@@ -87,7 +84,7 @@ in
       };
 
       github = {
-        user = "Cbeck527";
+        user = config.identity.githubUser;
       };
 
       "credential \"https://github.com\"" = {
@@ -106,7 +103,7 @@ in
     };
 
     signing = {
-      key = gitSigningKey;
+      key = config.identity.gpgKey;
       format = "openpgp";
       signByDefault = true;
     };

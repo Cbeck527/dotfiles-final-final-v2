@@ -18,6 +18,7 @@
     backupFileExtension = "hm-backup";
     users.${username} = {
       imports = [
+        ./identity.nix
         ./gpg.nix
         ./git.nix
       ];

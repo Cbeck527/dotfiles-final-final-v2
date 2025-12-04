@@ -1,5 +1,6 @@
 {
   pkgs,
+  config,
   ...
 }:
 
@@ -7,7 +8,7 @@
   programs.gpg = {
     enable = true;
     settings = {
-      default-key = "FBC98F20D0EB443EA67B41C170FA7961EA5F66A9";
+      default-key = config.identity.gpgKey;
       no-emit-version = true;
       no-comments = true;
       keyid-format = "0xlong";
