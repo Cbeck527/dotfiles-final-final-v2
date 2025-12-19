@@ -67,14 +67,12 @@ in
       cleanup = "zap";
     };
 
-    brews = [ ];
+    brews = [ "mas" ];
 
     taps = [
       "hashicorp/tap"
     ];
 
-    casks = lib.filter
-      (c: !(builtins.elem c config.custom.homebrew.excludeCasks))
-      baseCasks;
+    casks = lib.filter (c: !(builtins.elem c config.custom.homebrew.excludeCasks)) baseCasks;
   };
 }
