@@ -23,10 +23,13 @@ let
       withWebP = true;
     }).overrideAttrs
       (old: {
-        configureFlags = old.configureFlags ++ [ "--with-mac-metal" ];
+        configureFlags = old.configureFlags ++ lib.optionals cfg.macMetal [ "--with-mac-metal" ];
 
         env = (old.env or { }) // {
-          NIX_CFLAGS_COMPILE = "${old.env.NIX_CFLAGS_COMPILE or ""} -O3 -mcpu=native -fobjc-arc";
+          NIX_CFLAGS_COMPILE =
+            if cfg.cflags.append
+            then "${old.env.NIX_CFLAGS_COMPILE or ""} ${cfg.cflags.value}"
+            else cfg.cflags.value;
         };
 
         postInstall =
@@ -50,6 +53,19 @@ in
 {
   options.custom.emacs = {
     liquidGlassIcons = lib.mkEnableOption "liquid-glass icons for Emacs";
+    macMetal = lib.mkEnableOption "Mac Metal acceleration for Emacs";
+    cflags = {
+      value = lib.mkOption {
+        type = lib.types.str;
+        default = "-O3 -mcpu=native -fobjc-arc";
+        description = "CFLAGS for Emacs compilation";
+      };
+      append = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "If true, append to base NIX_CFLAGS_COMPILE; if false, replace entirely";
+      };
+    };
   };
 
   config = {
