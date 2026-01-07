@@ -78,5 +78,7 @@ in
     "xcodes-app"
     "xld"
     "yaak"
+    "openscad@snapshot"
+    "inkscape"
   ];
 }
