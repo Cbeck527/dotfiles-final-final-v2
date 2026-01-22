@@ -121,7 +121,7 @@
         hexyl
         just
         lua-language-server
-        nixfmt-rfc-style
+        nixfmt
         nodejs_24
         stylua
         vim
