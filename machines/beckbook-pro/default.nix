@@ -42,7 +42,7 @@ in
       };
     };
     home.packages = with pkgs; [
-      pkgs.pkgs-master.claude-code
+      claude-code
       ffmpeg
       terraform
 

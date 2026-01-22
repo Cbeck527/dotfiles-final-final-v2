@@ -9,6 +9,9 @@
     # Pinned for terraform 1.5.7 (last MPL-licensed version)
     nixpkgs-terraform-157.url = "github:nixos/nixpkgs/9204ded9bd5d64ccff9341c6f9eb4407ed6f1c01";
 
+    # Independently updatable: `make update.claude` or `nix flake update nixpkgs-claude-code`
+    nixpkgs-claude-code.url = "github:nixos/nixpkgs/master";
+
     nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -83,6 +86,14 @@
             (import inputs.nixpkgs-terraform-157 {
               inherit (prev.stdenv.hostPlatform) system;
             }).terraform_1;
+        };
+
+        claude-code = _: prev: {
+          claude-code =
+            (import inputs.nixpkgs-claude-code {
+              inherit (prev.stdenv.hostPlatform) system;
+              config.allowUnfree = true;
+            }).claude-code;
         };
 
         fenix = fenix.overlays.default;

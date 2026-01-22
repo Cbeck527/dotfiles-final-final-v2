@@ -54,8 +54,11 @@ lock.nix:; nix flake lock $(NIX_CHANNELS)
 lock.osx:; nix flake lock $(OSX_CHANNELS)
 lock.home:; nix flake lock $(HOME_CHANNELS)
 
-update: update.nix update.osx update.home update.extra
+update: update.nix update.osx update.home update.extra update.claude
 update.nix:; nix flake update $(NIX_CHANNELS)
 update.osx:; nix flake update $(OSX_CHANNELS)
 update.home:; nix flake update $(HOME_CHANNELS)
 update.extra:; nix flake update $(EXTRA_CHANNELS)
+
+# Update individual packages without touching other inputs
+update.claude:; nix flake update nixpkgs-claude-code
