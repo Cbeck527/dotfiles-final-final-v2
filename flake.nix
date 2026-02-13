@@ -71,13 +71,6 @@
           };
         };
 
-        pkgs-unstable = _: prev: {
-          pkgs-unstable = import inputs.nixpkgs {
-            inherit (prev.stdenv.hostPlatform) system;
-            config.allowUnfree = true;
-          };
-        };
-
         pkgs-master = _: prev: {
           pkgs-master = import inputs.nixpkgs-master {
             inherit (prev.stdenv.hostPlatform) system;
@@ -132,6 +125,9 @@
           ];
         };
       };
+
+      # Format: `nix fmt` or `make fmt`
+      formatter.aarch64-darwin = inputs.nixpkgs.legacyPackages.aarch64-darwin.nixfmt;
 
       # TODO: set up linux machines with home-manager
 

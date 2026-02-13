@@ -89,7 +89,6 @@
         fortune
         fzf
         htop
-        neofetch
         pstree
         tree
         watch
@@ -100,7 +99,6 @@
         findutils
         gawk
         gnumake
-        gnupg
         gnused
         less
         parallel
@@ -120,8 +118,6 @@
         chezmoi
         clang-tools
         cmake
-        delta
-        git
         git-lfs
         gh
         go

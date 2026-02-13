@@ -7,11 +7,11 @@ HOSTNAME := $(shell hostname)
 NIX_CHANNELS := nixpkgs nixpkgs-master nixpkgs-stable
 HOME_CHANNELS := home-manager
 OSX_CHANNELS := nix-darwin nix-homebrew homebrew-core homebrew-cask
-EXTRA_CHANNELS := fenix
+EXTRA_CHANNELS := fenix nix-config-private
 
 impure := $(if $(filter $(IMPURE),true),--impure,)
 
-.PHONY: all switch check build clean fclean lock lock.nix lock.osx lock.home \
+.PHONY: all switch check build fmt clean fclean lock lock.nix lock.osx lock.home \
 	update update.nix update.osx update.home update.extra update.claude
 
 ifeq ($(UNAME), Darwin) # darwin targets
@@ -22,6 +22,9 @@ switch:
 
 check:
 	nix flake check
+
+fmt:
+	nix fmt
 
 build:
 	nix build ".#darwinConfigurations.$(HOSTNAME).system" --dry-run

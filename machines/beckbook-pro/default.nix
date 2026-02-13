@@ -54,8 +54,7 @@ in
     ];
   };
 
-  # Override macOS defaults in ../common/darwin/defaults.nix
-  # system.defaults.NSGlobalDomain.AppleInterfaceStyle = "Dark";
+  # Override macOS defaults in ../../modules/darwin/defaults.nix
 
   # Machine-specific homebrew packages
   homebrew.taps = [
