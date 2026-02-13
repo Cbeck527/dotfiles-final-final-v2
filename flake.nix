@@ -2,8 +2,11 @@
   description = "Chris Becker's nix configuration for his hosts!";
 
   inputs = {
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixpkgs-25.05-darwin";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    # use unstable
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
+    # but provide escape hatches for other versions if needed
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
 
     # Pinned for terraform 1.5.7 (last MPL-licensed version)
@@ -14,17 +17,16 @@
 
     nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     home-manager = {
       url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # homebrew
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-
-    # Declarative Homebrew taps
     homebrew-core = {
       url = "github:homebrew/homebrew-core";
       flake = false;
@@ -34,11 +36,13 @@
       flake = false;
     };
 
+    # better Rust
     fenix = {
       url = "github:nix-community/fenix";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # private config with sensitive information
     nix-config-private = {
       url = "git+ssh://git@github.com/cbeck527/nix-config-private.git";
     };
@@ -68,7 +72,7 @@
         };
 
         pkgs-unstable = _: prev: {
-          pkgs-unstable = import inputs.nixpkgs-unstable {
+          pkgs-unstable = import inputs.nixpkgs {
             inherit (prev.stdenv.hostPlatform) system;
             config.allowUnfree = true;
           };
@@ -101,6 +105,8 @@
 
       # macOS configurations
       darwinConfigurations = {
+
+        # Personal
         beckbook-pro = nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
           specialArgs = { inherit inputs outputs; };
