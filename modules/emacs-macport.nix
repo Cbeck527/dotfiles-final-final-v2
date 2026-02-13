@@ -27,26 +27,27 @@ let
 
         env = (old.env or { }) // {
           NIX_CFLAGS_COMPILE =
-            if cfg.cflags.append
-            then "${old.env.NIX_CFLAGS_COMPILE or ""} ${cfg.cflags.value}"
-            else cfg.cflags.value;
+            if cfg.cflags.append then
+              "${old.env.NIX_CFLAGS_COMPILE or ""} ${cfg.cflags.value}"
+            else
+              cfg.cflags.value;
         };
 
         postInstall =
           (old.postInstall or "")
           + lib.optionalString cfg.liquidGlassIcons ''
-            if [ -d "$out/Applications/Emacs.app/Contents/Resources" ]; then
-              echo "Installing liquid-glass-icons Assets.car"
-              cp ${liquidGlassIcons} "$out/Applications/Emacs.app/Contents/Resources/Assets.car"
+                    if [ -d "$out/Applications/Emacs.app/Contents/Resources" ]; then
+                      echo "Installing liquid-glass-icons Assets.car"
+                      cp ${liquidGlassIcons} "$out/Applications/Emacs.app/Contents/Resources/Assets.car"
 
-              plist="$out/Applications/Emacs.app/Contents/Info.plist"
-              if ! grep -q "CFBundleIconName" "$plist"; then
-                echo "Setting CFBundleIconName in Info.plist"
-                ${pkgs.gnused}/bin/sed -i '/<\/dict>/i \
-    <key>CFBundleIconName</key>\
-    <string>EmacsLG1</string>' "$plist"
-              fi
-            fi
+                      plist="$out/Applications/Emacs.app/Contents/Info.plist"
+                      if ! grep -q "CFBundleIconName" "$plist"; then
+                        echo "Setting CFBundleIconName in Info.plist"
+                        ${pkgs.gnused}/bin/sed -i '/<\/dict>/i \
+            <key>CFBundleIconName</key>\
+            <string>EmacsLG1</string>' "$plist"
+                      fi
+                    fi
           '';
       });
 in
