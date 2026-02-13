@@ -21,6 +21,7 @@
         ./identity.nix
         ./gpg.nix
         ./git.nix
+        ./tmux.nix
       ];
 
       home.stateVersion = "25.05";
@@ -68,6 +69,15 @@
         };
       };
 
+      programs.ripgrep = {
+        enable = true;
+        arguments = [
+          "--no-heading"
+          "--no-line-number"
+          "--context=0"
+        ];
+      };
+
       home.packages = with pkgs; [
         # Shell & Terminal
         aspell
@@ -81,7 +91,6 @@
         htop
         neofetch
         pstree
-        tmux
         tree
         watch
         zoxide
@@ -95,7 +104,6 @@
         gnused
         less
         parallel
-        procps
         rsync
         wget
 
@@ -103,7 +111,6 @@
         dasel
         fd
         jq
-        ripgrep
         shellcheck
         silver-searcher
         yq
@@ -163,6 +170,7 @@
         gopls
         nil # nix lsp
         terraform-ls
+        typescript-language-server
         uv
         vscode-langservers-extracted
         yaml-language-server
