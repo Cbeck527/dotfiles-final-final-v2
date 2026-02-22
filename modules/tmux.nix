@@ -8,7 +8,7 @@
     historyLimit = 50000;
     mouse = true;
     escapeTime = 0;
-    keyMode = "emacs";
+    keyMode = "vi";
     focusEvents = true;
 
     plugins = with pkgs.tmuxPlugins; [
@@ -121,9 +121,23 @@
       bind C-y setw synchronize-panes
       bind C-x setw synchronize-panes
 
-      # copy mode - ESC to exit
+      # keep status-keys as emacs (vi mode-keys set above via keyMode)
+      set -g status-keys emacs
+
+      # copy mode
+      bind Enter copy-mode
       bind-key -T copy-mode Escape send-keys -X cancel
       bind-key -T copy-mode-vi Escape send-keys -X cancel
+      bind-key -T copy-mode-vi v send -X begin-selection
+      bind-key -T copy-mode-vi C-v send -X rectangle-toggle
+      bind-key -T copy-mode-vi y send -X copy-selection-and-cancel
+      bind-key -T copy-mode-vi H send -X start-of-line
+      bind-key -T copy-mode-vi L send -X end-of-line
+
+      # buffers
+      bind b list-buffers
+      bind p paste-buffer
+      bind P choose-buffer
 
       bind J select-layout even-vertical
       bind H select-layout even-horizontal

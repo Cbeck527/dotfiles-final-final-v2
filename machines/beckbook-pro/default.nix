@@ -18,7 +18,10 @@ in
     ../../modules/emacs-macport.nix
   ];
 
-  custom.emacs.liquidGlassIcons = true;
+  custom.emacs = {
+    macMetal = true;
+    cflags.value = "-O3 -mcpu=native -fobjc-arc -DFD_SETSIZE=10000 -D_DARWIN_UNLIMITED_SELECT";
+  };
 
   system.primaryUser = username;
 

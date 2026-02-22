@@ -23,6 +23,11 @@ let
       withWebP = true;
     }).overrideAttrs
       (old: {
+        # Bypass macOS sandbox: the byte compiler's macro-expansion of url.el
+        # triggers GnuTLS cert scanning of /etc/ssl/certs, which the sandbox blocks.
+        # Requires sandbox = relaxed in nix.conf.
+        __noChroot = true;
+
         configureFlags = old.configureFlags ++ lib.optionals cfg.macMetal [ "--with-mac-metal" ];
 
         env = (old.env or { }) // {
