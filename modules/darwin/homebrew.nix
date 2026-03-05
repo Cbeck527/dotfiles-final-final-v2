@@ -19,6 +19,7 @@ let
     "rectangle-pro"
     "textexpander"
     "cleanshot"
+    "obsidian"
 
     # Development
     "sublime-text"
