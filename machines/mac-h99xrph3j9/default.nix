@@ -54,21 +54,6 @@ in
 
   custom.homebrew.excludeCasks = [ "contexts" ];
 
-  home-manager.users.${username} = {
-    identity.email = workEmail;
-
-    home.packages = with pkgs; [
-      claude-code
-      aws-sso-cli
-      terraform_1_5_7
-      terragrunt
-
-      nodePackages_latest.prettier
-    ];
-  };
-
-  system.defaults.universalaccess = { };
-
   homebrew.taps = [ ];
 
   homebrew.brews = [ ];
