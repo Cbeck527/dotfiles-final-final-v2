@@ -8,11 +8,12 @@ NIX_CHANNELS := nixpkgs nixpkgs-master nixpkgs-stable
 HOME_CHANNELS := home-manager
 OSX_CHANNELS := nix-darwin nix-homebrew homebrew-core homebrew-cask
 EXTRA_CHANNELS := fenix nix-config-private
+LLM_CHANNELS := llm-agents-nix
 
 impure := $(if $(filter $(IMPURE),true),--impure,)
 
 .PHONY: all switch check build fmt clean fclean lock lock.nix lock.osx lock.home \
-	update update.nix update.osx update.home update.extra update.claude
+	update update.nix update.osx update.home update.extra update.llms update.claude audit
 
 ifeq ($(UNAME), Darwin) # darwin targets
 all: switch
@@ -59,11 +60,14 @@ lock.nix:; nix flake lock $(NIX_CHANNELS)
 lock.osx:; nix flake lock $(OSX_CHANNELS)
 lock.home:; nix flake lock $(HOME_CHANNELS)
 
-update: update.nix update.osx update.home update.extra update.claude
+update: update.nix update.osx update.home update.extra update.llms
 update.nix:; nix flake update $(NIX_CHANNELS)
 update.osx:; nix flake update $(OSX_CHANNELS)
 update.home:; nix flake update $(HOME_CHANNELS)
 update.extra:; nix flake update $(EXTRA_CHANNELS)
 
-# Update individual packages without touching other inputs
-update.claude:; nix flake update nixpkgs-claude-code
+# Update individual package groups without touching other inputs
+update.llms:; nix flake update $(LLM_CHANNELS)
+update.claude: update.llms  # alias for muscle memory
+
+audit:; scripts/audit-flake-inputs.sh

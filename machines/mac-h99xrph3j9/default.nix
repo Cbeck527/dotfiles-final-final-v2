@@ -29,7 +29,7 @@ in
     identity.email = workEmail;
 
     home.packages = with pkgs; [
-      pkgs.pkgs-master.claude-code
+      claude-code
       pkgs.pkgs-master.codex
       aws-sso-cli
       terraform_1_5_7

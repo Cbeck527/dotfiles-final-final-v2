@@ -46,6 +46,7 @@ in
     };
     home.packages = with pkgs; [
       claude-code
+      pi
       ffmpeg
       terraform
 
