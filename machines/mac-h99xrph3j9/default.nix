@@ -18,31 +18,15 @@ in
     ../../modules/emacs-macport.nix
   ];
 
-  system.primaryUser = username;
-  system.defaults.universalaccess = { }; # work profile blocks changing this
-
-  services.caffeinate.enable = true;
-
-  _module.args = { inherit username userHome; };
-
-  home-manager.users.${username} = {
-    identity.email = workEmail;
-
-    home.packages = with pkgs; [
-      claude-code
-      pkgs.pkgs-master.codex
-      aws-sso-cli
-      terraform_1_5_7
-      terragrunt
-
-      nodePackages_latest.prettier
-    ];
-  };
-
   custom.emacs = {
     macMetal = true;
     cflags.value = "-O3 -mcpu=native -fobjc-arc -DFD_SETSIZE=10000 -D_DARWIN_UNLIMITED_SELECT";
   };
+
+  system.primaryUser = username;
+  system.defaults.universalaccess = { }; # work profile blocks changing this
+
+  _module.args = { inherit username userHome; };
 
   nix-homebrew = {
     enable = true;
@@ -51,12 +35,28 @@ in
     autoMigrate = true;
     mutableTaps = true;
   };
-
   custom.homebrew.excludeCasks = [ "contexts" ];
 
-  homebrew.taps = [ ];
+  home-manager.users.${username} = {
+    identity.email = workEmail;
 
-  homebrew.brews = [ ];
+    home.packages = with pkgs; [
+      # llms
+      claude-code
+      codex
+      pi
+
+      datadog-pup
+
+      # AWS SSO Integration
+      aws-sso-cli
+
+      # terraform version overlay and TF tooling
+      terraform_1_5_7
+      terragrunt
+      nodePackages_latest.prettier
+    ];
+  };
 
   homebrew.casks = [
     "yaak"
@@ -67,4 +67,7 @@ in
   # utc time - 1538245904
   # dato - 1470584107
   # wipr - 1662217862
+  # reader safari extension - 1640236961
+
+  services.caffeinate.enable = true;
 }
