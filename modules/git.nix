@@ -1,6 +1,5 @@
 {
   pkgs,
-  lib,
   config,
   ...
 }:
@@ -12,6 +11,10 @@
     settings = {
       user.name = config.identity.name;
       user.email = config.identity.email;
+
+      advice = {
+        detachedHead = false;
+      };
 
       core = {
         editor = "emacsclient";
