@@ -27,16 +27,6 @@ in
 
   _module.args = { inherit username userHome; };
 
-  # nix-homebrew: manage Homebrew installation declaratively
-  nix-homebrew = {
-    enable = true;
-    enableRosetta = true;
-    user = username;
-    autoMigrate = true;
-    # mutableTaps = true allows nix-darwin's homebrew.taps to work
-    mutableTaps = true;
-  };
-
   # home-manager customizations
   home-manager.users.${username} = {
     programs.atuin = {
@@ -49,6 +39,7 @@ in
       pi
       ffmpeg
       terraform
+      flyctl
 
       # Meshtastic/SDR
       natscli
@@ -58,25 +49,12 @@ in
     ];
   };
 
-  # Override macOS defaults in ../../modules/darwin/defaults.nix
-
-  # Machine-specific homebrew packages
-  homebrew.taps = [
-    "facebook/fb"
-    "getsentry/tools"
-  ];
-
-  homebrew.brews = [
-    "flyctl"
-  ];
-
   homebrew.casks = [
     "claude"
     "discord"
     "iina"
     "jdownloader"
     "qflipper"
-    "tidal"
     "transmission"
     "xcodes-app"
     "xld"

@@ -1,5 +1,6 @@
 {
   pkgs,
+  inputs,
   ...
 }:
 let
@@ -44,13 +45,6 @@ in
 
   _module.args = { inherit username userHome; };
 
-  nix-homebrew = {
-    enable = true;
-    enableRosetta = true;
-    user = username;
-    autoMigrate = true;
-    mutableTaps = true;
-  };
   custom.homebrew.excludeCasks = [ "contexts" ];
 
   home-manager.users.${username} = {

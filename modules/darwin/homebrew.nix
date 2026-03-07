@@ -1,4 +1,10 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  inputs,
+  username,
+  ...
+}:
 
 let
   baseCasks = [
@@ -59,19 +65,32 @@ in
     description = "Casks to exclude from homebrew installation";
   };
 
+  # nix-managed homebrew installation
+  config.nix-homebrew = {
+    enable = true;
+    enableRosetta = true;
+    user = username;
+    autoMigrate = true;
+    mutableTaps = true;
+    taps = {
+      "homebrew/homebrew-core" = inputs.homebrew-core;
+      "homebrew/homebrew-cask" = inputs.homebrew-cask;
+    };
+  };
+
+  # nix-managed brew taps, formulae, and taps
   config.homebrew = {
     enable = true;
 
     onActivation = {
-      autoUpdate = true;
-      upgrade = true;
+      autoUpdate = false;
+      upgrade = false;
       cleanup = "zap";
     };
 
-    brews = [ "mas" ];
-
     taps = [
-      "hashicorp/tap"
+      "homebrew/core"
+      "homebrew/cask"
     ];
 
     casks = lib.filter (c: !(builtins.elem c config.custom.homebrew.excludeCasks)) baseCasks;

@@ -11,5 +11,6 @@
     pinentry_mac
     (python3.withPackages (ps: [ ps.pip ]))
     terminal-notifier
+    mas
   ];
 }
