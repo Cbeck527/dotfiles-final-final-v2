@@ -16,6 +16,9 @@
     package = pkgs.nix;
     settings = {
       warn-dirty = false;
+      # "relaxed" allows per-derivation sandbox opt-out via __noChroot.
+      # Required for emacs-macport: byte-compiling url.el triggers GnuTLS
+      # cert scanning of /etc/ssl/certs, which strict sandboxing blocks.
       sandbox = "relaxed";
     };
 

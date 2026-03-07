@@ -5,10 +5,6 @@
     # use unstable
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    # but provide escape hatches for other versions if needed
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
-    nixpkgs-master.url = "github:nixos/nixpkgs/master";
-
     # Pinned for terraform 1.5.7 (last MPL-licensed version)
     nixpkgs-terraform-157.url = "github:nixos/nixpkgs/9204ded9bd5d64ccff9341c6f9eb4407ed6f1c01";
 
@@ -62,22 +58,7 @@
       inherit (self) outputs;
     in
     {
-      # Overlays to expose multiple nixpkgs channels
       overlays = {
-        pkgs-stable = _: prev: {
-          pkgs-stable = import inputs.nixpkgs-stable {
-            inherit (prev.stdenv.hostPlatform) system;
-            config.allowUnfree = true;
-          };
-        };
-
-        pkgs-master = _: prev: {
-          pkgs-master = import inputs.nixpkgs-master {
-            inherit (prev.stdenv.hostPlatform) system;
-            config.allowUnfree = true;
-          };
-        };
-
         terraform-157 = _: prev: {
           terraform_1_5_7 =
             (import inputs.nixpkgs-terraform-157 {
