@@ -13,7 +13,7 @@ os := os()
 impure := if IMPURE == "true" { "--impure" } else { "" }
 
 # Channels
-NIX_CHANNELS := "nixpkgs nixpkgs-master nixpkgs-stable"
+NIX_CHANNELS := "nixpkgs"
 HOME_CHANNELS := "home-manager"
 OSX_CHANNELS := "nix-darwin nix-homebrew homebrew-core homebrew-cask"
 EXTRA_CHANNELS := "fenix nix-config-private"
