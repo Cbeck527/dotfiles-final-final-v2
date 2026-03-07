@@ -26,6 +26,12 @@
 
       home.stateVersion = "25.05";
 
+      targets.darwin.copyApps = {
+        enable = true;
+        directory = "Applications/HomeManager";
+      };
+      targets.darwin.linkApps.enable = false;
+
       programs.home-manager.enable = true;
 
       programs.fish = {
@@ -95,6 +101,15 @@
       };
 
       home.packages = with pkgs; [
+        # GUI Apps (moved from Homebrew casks)
+        alacritty
+        kitty
+        obsidian
+        slack
+        wireshark
+        keka
+        _1password-cli
+
         # Shell & Terminal
         aspell
         bat

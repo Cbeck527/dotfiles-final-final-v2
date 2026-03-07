@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  username,
   ...
 }:
 
@@ -75,6 +76,6 @@ in
   };
 
   config = {
-    environment.systemPackages = [ emacs-macport ];
+    home-manager.users.${username}.home.packages = [ emacs-macport ];
   };
 }

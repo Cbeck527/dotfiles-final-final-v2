@@ -9,9 +9,7 @@
 let
   baseCasks = [
     # Terminal emulators
-    "alacritty"
     "ghostty"
-    "kitty"
 
     # Browsers
     "firefox"
@@ -19,13 +17,11 @@ let
     "orion"
 
     # Productivity
-    "1password-cli"
     "alfred"
     "contexts"
     "rectangle-pro"
     "textexpander"
     "cleanshot"
-    "obsidian"
 
     # Development
     "sublime-text"
@@ -44,18 +40,13 @@ let
     # Utilities
     "bartender"
     "choosy"
-    "keka"
     "macupdater"
     "appcleaner"
     "apparency"
 
-    # Communication
-    "slack"
-
     # Other
     "aldente"
     "boltai"
-    "wireshark-app"
   ];
 in
 {
@@ -85,7 +76,7 @@ in
     onActivation = {
       autoUpdate = false;
       upgrade = false;
-      cleanup = "zap";
+      cleanup = "uninstall";
     };
 
     taps = [

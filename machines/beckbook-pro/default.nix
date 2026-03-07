@@ -41,6 +41,12 @@ in
       terraform
       flyctl
 
+      # GUI Apps
+      discord
+      iina
+      inkscape
+      openscad-unstable
+
       # Meshtastic/SDR
       natscli
       nats-server
@@ -51,15 +57,11 @@ in
 
   homebrew.casks = [
     "claude"
-    "discord"
-    "iina"
     "jdownloader"
     "qflipper"
     "transmission"
     "xcodes-app"
     "xld"
     "yaak"
-    "openscad@snapshot"
-    "inkscape"
   ];
 }
