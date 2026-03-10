@@ -53,6 +53,7 @@ in
   homebrew.casks = [
     "claude"
     "jdownloader"
+    "kicad"
     "qflipper"
     "transmission"
     "xcodes-app"
