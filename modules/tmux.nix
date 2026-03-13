@@ -10,6 +10,7 @@
     escapeTime = 0;
     keyMode = "vi";
     focusEvents = true;
+    terminal = "tmux-256color";
 
     plugins = with pkgs.tmuxPlugins; [
       {
