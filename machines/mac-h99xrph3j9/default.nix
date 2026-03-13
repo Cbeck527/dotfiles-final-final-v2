@@ -1,14 +1,10 @@
 {
   pkgs,
   lib,
-  inputs,
+  username,
   ...
 }:
 let
-  username = "christopher.becker";
-  userHome = "/Users/christopher.becker";
-  workEmail = "REDACTED";
-
   datadog-pup = pkgs.stdenv.mkDerivation (finalAttrs: {
     pname = "datadog-pup";
     version = "0.27.0";
@@ -39,13 +35,9 @@ in
   system.primaryUser = username;
   system.defaults.universalaccess = lib.mkForce null; # work MDM blocks changing this
 
-  _module.args = { inherit username userHome; };
-
   custom.homebrew.excludeCasks = [ "contexts" ];
 
   home-manager.users.${username} = {
-    identity.email = workEmail;
-
     home.packages = with pkgs; [
       # llms
       claude-code
