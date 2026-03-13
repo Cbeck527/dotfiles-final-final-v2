@@ -1,6 +1,13 @@
 {
   description = "Chris Becker's nix configuration for his hosts!";
 
+  nixConfig = {
+    extra-substituters = [ "https://cache.numtide.com" ];
+    extra-trusted-public-keys = [
+      "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+    ];
+  };
+
   inputs = {
     # use unstable
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -35,7 +42,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # LLM tooling (claude-code, pi)
+    # LLM tooling
     llm-agents-nix.url = "github:numtide/llm-agents.nix";
 
     # private config with sensitive information
@@ -66,10 +73,13 @@
             }).terraform_1;
         };
 
-        llm-agents = _: prev: {
-          claude-code = inputs.llm-agents-nix.packages.${prev.stdenv.hostPlatform.system}.claude-code;
-          pi = inputs.llm-agents-nix.packages.${prev.stdenv.hostPlatform.system}.pi;
-        };
+        llm-agents = _: prev:
+          let
+            agentPkgs = inputs.llm-agents-nix.packages.${prev.stdenv.hostPlatform.system};
+          in
+          {
+            inherit (agentPkgs) claude-code codex pi;
+          };
 
         fenix = fenix.overlays.default;
       };
