@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   username,
   userHome,
   ...
@@ -88,6 +89,38 @@
           update_check = false;
           show_preview = false;
           show_tabs = false;
+        };
+      };
+
+      programs.ghostty = {
+        enable = true;
+        package = if pkgs.stdenv.isDarwin then null else pkgs.ghostty;
+        settings = {
+          font-size = 17;
+          font-family = "TX-02";
+          font-style = "Regular";
+          font-style-bold = "Bold";
+          font-thicken = true;
+
+          theme = "iTerm2 Solarized Dark";
+          cursor-style = "block";
+          cursor-style-blink = false;
+
+          window-theme = "system";
+          window-padding-balance = true;
+          window-padding-x = 6;
+          window-padding-y = 1;
+
+          clipboard-read = "allow";
+          clipboard-write = "allow";
+
+          shell-integration = "fish";
+          shell-integration-features = "no-cursor";
+
+          macos-titlebar-style = "native";
+          macos-titlebar-proxy-icon = "hidden";
+
+          auto-update = "off";
         };
       };
 
