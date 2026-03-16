@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   config,
   ...
 }:
@@ -18,7 +19,6 @@
 
       core = {
         editor = "emacsclient";
-        excludesfile = "~/.gitignore";
         ignorecase = true;
         untrackedCache = true;
         preloadindex = true;
@@ -114,7 +114,44 @@
     lfs.enable = true;
 
     ignores = [
-      # Add your global gitignore patterns here if you have any
+      # Editor (Emacs)
+      "TODOs.org"
+      ".projectile"
+      ".dir-locals.el"
+      ".projectile-cache*"
+      "*.elc"
+
+      # Misc
+      ".ignore"
+      ".envrc"
+
+      # LLM tooling
+      ".aider*"
+      ".serena*"
+      ".claude*"
+      ".mcp.json"
+      "CLAUDE*.md"
+      "AGENTS.md"
+    ]
+    ++ lib.optionals pkgs.stdenv.isDarwin [
+      # macOS
+      ".DS_Store"
+      ".AppleDouble"
+      ".LSOverride"
+      "Icon"
+      "._*"
+      ".DocumentRevisions-V100"
+      ".fseventsd"
+      ".Spotlight-V100"
+      ".TemporaryItems"
+      ".Trashes"
+      ".VolumeIcon.icns"
+      ".com.apple.timemachine.donotpresent"
+      ".AppleDB"
+      ".AppleDesktop"
+      "Network Trash Folder"
+      "Temporary Items"
+      ".apdisk"
     ];
 
     # Use includes for local overrides
