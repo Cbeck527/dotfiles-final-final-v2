@@ -56,6 +56,8 @@
       # -- global ------------------------------------------------------------------
       unbind C-b
       bind a send-prefix
+      set -g extended-keys on
+      set -g extended-keys-format csi-u
 
       # -- navigation --------------------------------------------------------------
       bind C-c command-prompt -p 'New session name: ' 'new-session -s "%%"'
