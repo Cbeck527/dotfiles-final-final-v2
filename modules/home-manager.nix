@@ -285,9 +285,15 @@
 
       };
 
+      programs.obsidian = {
+        enable = true;
+        cli.enable = true;
+      };
+
       home.packages = with pkgs; [
         # GUI Apps (moved from Homebrew casks)
         obsidian
+        clearance
         slack
         wireshark
         keka
