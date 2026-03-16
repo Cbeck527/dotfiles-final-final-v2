@@ -149,6 +149,7 @@
         chezmoi
         clang-tools
         cmake
+        dprint
         git-lfs
         gh
         go
