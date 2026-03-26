@@ -1,5 +1,4 @@
 # nix-config Justfile
-set fallback := false
 
 # List available recipes
 default:
@@ -8,11 +7,12 @@ default:
 IMPURE := "false"
 
 hostname := `hostname`
-os := os()
 
 impure := if IMPURE == "true" { "--impure" } else { "" }
 
-# Channels
+# Build and apply using local private config
+mod local
+
 NIX_CHANNELS := "nixpkgs"
 HOME_CHANNELS := "home-manager"
 OSX_CHANNELS := "nix-darwin nix-homebrew homebrew-core homebrew-cask"
@@ -21,73 +21,94 @@ LLM_CHANNELS := "llm-agents-nix"
 
 # Apply config for current hostname
 [macos]
+[group('build')]
 switch:
     sudo darwin-rebuild switch {{ impure }} --verbose --flake ".#{{ hostname }}" --fallback
 
 # Validate flake without applying
 [macos]
+[group('build')]
 check:
     nix flake check
 
-# Dry-run build for current hostname
+# Build config for current hostname
 [macos]
+[group('build')]
 build:
-    nix build ".#darwinConfigurations.{{ hostname }}.system" --dry-run
-
-# Format all nix files
-[macos]
-fmt:
-    nix fmt
+    nix build ".#darwinConfigurations.{{ hostname }}.system"
 
 # TODO: linux support
 # [linux]
 # switch:
 #     nix build .#homeConfigurations.linux.activationPackage
 
+# Format all nix files
+[macos]
+[group('maintain')]
+fmt:
+    nix fmt
+
 # Garbage collect nix store
+[group('maintain')]
 clean:
     nix-collect-garbage
 
-# Full cleanup (requires sudo)
-fclean:
-    @echo "/!\ require to be root"
+# Full cleanup (requires sudo, deletes old generations)
+[confirm]
+[group('maintain')]
+deep-clean:
     sudo nix-env -p /nix/var/nix/profiles/system --delete-generations old
     nix-collect-garbage -d
 
-# Lock all flake inputs
-lock: lock-nix lock-osx lock-home
-
-lock-nix:
-    nix flake lock {{ NIX_CHANNELS }}
-
-lock-osx:
-    nix flake lock {{ OSX_CHANNELS }}
-
-lock-home:
-    nix flake lock {{ HOME_CHANNELS }}
+# Run flake input audit
+[group('maintain')]
+audit:
+    scripts/audit-flake-inputs.sh
 
 # Update all flake inputs
+[group('flake')]
 update: update-nix update-osx update-home update-extra update-llms
 
+# Lock all flake inputs
+[group('flake')]
+lock: lock-nix lock-osx lock-home lock-extra lock-llms
+
+[private]
 update-nix:
     nix flake update {{ NIX_CHANNELS }}
 
+[private]
 update-osx:
     nix flake update {{ OSX_CHANNELS }}
 
+[private]
 update-home:
     nix flake update {{ HOME_CHANNELS }}
 
+[private]
 update-extra:
     nix flake update {{ EXTRA_CHANNELS }}
 
-# Update LLM-related flake inputs
+[private]
 update-llms:
     nix flake update {{ LLM_CHANNELS }}
 
-# Alias for muscle memory
-update-claude: update-llms
+[private]
+lock-nix:
+    nix flake lock {{ NIX_CHANNELS }}
 
-# Run flake input audit
-audit:
-    scripts/audit-flake-inputs.sh
+[private]
+lock-osx:
+    nix flake lock {{ OSX_CHANNELS }}
+
+[private]
+lock-home:
+    nix flake lock {{ HOME_CHANNELS }}
+
+[private]
+lock-extra:
+    nix flake lock {{ EXTRA_CHANNELS }}
+
+[private]
+lock-llms:
+    nix flake lock {{ LLM_CHANNELS }}
