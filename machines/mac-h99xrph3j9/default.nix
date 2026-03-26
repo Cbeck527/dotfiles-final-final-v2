@@ -37,6 +37,76 @@ in
   custom.homebrew.excludeCasks = [ "contexts" ];
 
   home-manager.users.${username} = {
+    programs.k9s.views = {
+      "v1/pods" = {
+        sortColumn = "NAME:asc";
+        columns = [
+          "NAMESPACE"
+          "NAME"
+          "APP:.metadata.labels.app"
+          "STATUS"
+          "TYPE:.metadata.labels.rodeo-component-type|W"
+          "OWNER:.metadata.labels.owner|W"
+          "IP"
+          "NODE"
+          "READY"
+          "READINESS GATES"
+          "AGE"
+          "RESTARTS"
+          "CPU/R:L"
+          "MEM/R:L"
+          "LABELS|H"
+          "NOMINATED NODE|H"
+          "QOS|H"
+        ];
+      };
+      "apps/v1/deployments" = {
+        columns = [
+          "NAME"
+          "APP:.metadata.labels.app"
+          "TYPE:.metadata.labels.rodeo-component-type"
+          "COMPONENT:.metadata.labels.component|W"
+          "READY"
+          "UP-TO-DATE"
+          "AVAILABLE"
+          "AGE"
+          "LABELS|H"
+        ];
+      };
+      "v1/services" = {
+        columns = [
+          "NAME"
+          "TYPE:.metadata.labels.component"
+          "TYPE"
+          "SELECTOR|W"
+          "CLUSTER-IP"
+          "EXTERNAL-IP|W"
+          "PORTS"
+          "AGE"
+          "LABELS|H"
+        ];
+      };
+      "v1/nodes" = {
+        sortColumn = "AGE:asc";
+        columns = [
+          "INSTANCE ID:.metadata.labels.instance-id"
+          "IP:.metadata.annotations.alpha\\.kubernetes\\.io/provided-node-ip"
+          "CAPACITY TYPE:.metadata.labels.eks\\.amazonaws\\.com/capacityType"
+          "NODE GROUP:.metadata.labels.eks\\.amazonaws\\.com/nodegroup"
+          "AZ:.metadata.labels.topology\\.kubernetes\\.io/zone"
+          "TAINTS"
+          "STATUS"
+          "PODS"
+          "AGE"
+          "VERSION|W"
+          "INTERNAL-IP|H"
+          "EXTERNAL-IP|H"
+          "NAME|H"
+          "ROLE|H"
+        ];
+      };
+    };
+
     home.packages = with pkgs; [
       # llms
       claude-code
