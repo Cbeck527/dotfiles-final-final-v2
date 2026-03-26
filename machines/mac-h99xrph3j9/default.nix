@@ -32,6 +32,8 @@ in
     ../../modules/emacs-macport.nix
   ];
 
+  nix.settings.trusted-users = lib.mkAfter [ username ];
+
   system.primaryUser = username;
 
   custom.homebrew.excludeCasks = [ "contexts" ];
