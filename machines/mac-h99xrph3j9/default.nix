@@ -33,7 +33,6 @@ in
   ];
 
   system.primaryUser = username;
-  system.defaults.universalaccess = lib.mkForce null; # work MDM blocks changing this
 
   custom.homebrew.excludeCasks = [ "contexts" ];
 
@@ -56,9 +55,12 @@ in
     ];
   };
 
-  homebrew.casks = [
-    "yaak"
-  ];
+  homebrew = {
+    caskArgs.appdir = "~/Applications";
+    casks = [
+      "yaak"
+    ];
+  };
 
   # TODO: handle mac app store apps?
   # 1PW for Safari - 1569813296
