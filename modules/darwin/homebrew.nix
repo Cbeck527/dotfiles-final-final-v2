@@ -25,7 +25,6 @@ let
 
     # Development
     "sublime-text"
-    "bbedit"
 
     # QuickLook plugins
     "qlcolorcode"
@@ -40,13 +39,9 @@ let
     # Utilities
     "bartender"
     "choosy"
-    "macupdater"
     "appcleaner"
     "apparency"
 
-    # Other
-    "aldente"
-    "boltai"
   ];
 in
 {
