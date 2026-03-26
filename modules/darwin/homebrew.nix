@@ -56,29 +56,44 @@ in
     description = "Casks to exclude from homebrew installation";
   };
 
-  # nix-managed homebrew installation
+  # manage homebrew installation with nix
   config.nix-homebrew = {
     enable = true;
     enableRosetta = true;
     user = username;
     autoMigrate = true;
-    mutableTaps = true;
+
+    # taps in /opt/homebrew/Library/Taps/ are linked to nix store
+    mutableTaps = false;
     taps = {
       "homebrew/homebrew-core" = inputs.homebrew-core;
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
     };
   };
 
-  # nix-managed brew taps, formulae, and taps
+  # manage homebrew taps, formulae, casks etc with nix-darwin
   config.homebrew = {
     enable = true;
+    enableFishIntegration = true;
+
+    global = {
+      autoUpdate = false; # HOMEBREW_NO_AUTO_UPDATE=1
+    };
 
     onActivation = {
-      autoUpdate = false;
+      # auto-update itself and all formulae during nix-darwin system activation
+      # NOTE: we pin taps with nix-homebrew so this won't update formulae definitions
+      autoUpdate = true;
+
+      # upgrade outdated formulae during nix-darwin system activation
       upgrade = true;
+
+      # remove formulae not declared in this config
       cleanup = "uninstall";
     };
 
+    # NOTE: this may look repetitive, but we have to re-declare our taps for the
+    # generated Brewfile to use them
     taps = [
       "homebrew/core"
       "homebrew/cask"
