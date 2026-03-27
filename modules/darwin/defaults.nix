@@ -13,7 +13,7 @@
   };
 
   nix = {
-    package = pkgs.nix;
+    package = pkgs.lix;
     settings = {
       warn-dirty = false;
       # "relaxed" allows per-derivation sandbox opt-out via __noChroot.
