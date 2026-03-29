@@ -8,11 +8,11 @@
 let
   clearance = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "clearance";
-    version = "1.2.3";
+    version = "1.3.1";
 
     src = pkgs.fetchurl {
       url = "https://github.com/prime-radiant-inc/clearance/releases/download/v${finalAttrs.version}/Clearance-${finalAttrs.version}-macOS.zip";
-      hash = "sha256-7rRWJkl2+8aL7O9RHZSQYB1R/I2VG+ieaC0/uZsFA5w=";
+      hash = "sha256-k01mlq59SZTvuOEayAXLncQXETl+7rcD3j+FiYWHhEM=";
     };
 
     nativeBuildInputs = [ pkgs.unzip ];
@@ -35,12 +35,12 @@ let
 in
 {
   # Darwin-specific packages
-  home-manager.users.${username}.home.packages = with pkgs; [
+  home-manager.users.${username}.home.packages = [
     clearance
-    minijinja
-    pinentry_mac
-    (python3.withPackages (ps: [ ps.pip ]))
-    terminal-notifier
-    mas
+    pkgs.minijinja
+    pkgs.pinentry_mac
+    (pkgs.python3.withPackages (ps: [ ps.pip ]))
+    pkgs.terminal-notifier
+    pkgs.mas
   ];
 }

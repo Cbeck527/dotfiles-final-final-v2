@@ -73,13 +73,85 @@
             }).terraform_1;
         };
 
-        llm-agents = _: prev:
+        llm-agents =
+          _: prev:
           let
             agentPkgs = inputs.llm-agents-nix.packages.${prev.stdenv.hostPlatform.system};
           in
           {
-            inherit (agentPkgs) claude-code codex pi;
+            inherit (agentPkgs)
+              claude-code
+              codex
+              pi
+              qmd
+              ;
           };
+
+        readwise-cli = _: prev: {
+          readwise-cli = prev.buildNpmPackage {
+            pname = "readwise-cli";
+            version = "0.5.3";
+            src = prev.fetchFromGitHub {
+              owner = "readwiseio";
+              repo = "readwise-cli";
+              rev = "e7b4f77ea00184222cd68a7eea07e6457780213e";
+              hash = "sha256-dkyRRQHtdsprIVJvouqH4WKzXDq5AKRgfLNWxem7t3s=";
+            };
+            npmDepsHash = "sha256-U8YriPY/x9t9cZ3a4caq4oZRe396X3r0RKVJhTTRiNI=";
+          };
+        };
+
+        # Custom tea build pinned to bfbec3f with CF Access custom headers patch
+        tea = _: prev: {
+          tea = (prev.buildGoModule.override { go = prev.go_1_26; }) {
+            pname = "tea";
+            version = "0.12.0-custom-headers";
+
+            src = prev.fetchFromGitea {
+              domain = "gitea.com";
+              owner = "gitea";
+              repo = "tea";
+              rev = "bfbec3fc00e12d88a5490d42e64a984445135929";
+              hash = "sha256-i10EMmaYl5gWVV5B4gLpX8ZVKxKb9pVsFkvBIvqQjkA=";
+            };
+
+            patches = [ ./etc/patches/tea-custom-headers.patch ];
+            vendorHash = "sha256-FnKq34/0pPOUNRwB6T/kSrNo2gMm1H9ob1y9srTWstY=";
+
+            ldflags = [
+              "-s"
+              "-w"
+              "-X"
+              "code.gitea.io/tea/modules/version.Version=0.12.0-custom-headers"
+              "-X"
+              "code.gitea.io/tea/modules/version.Tags=nixpkgs"
+              "-X"
+              "code.gitea.io/tea/modules/version.SDK=v0.24.1"
+            ];
+
+            checkFlags = [ "-skip=TestRepoFromPath_Worktree" ];
+            nativeBuildInputs = [ prev.installShellFiles ];
+            nativeCheckInputs = [ prev.writableTmpDirAsHomeHook ];
+
+            postInstall = prev.lib.optionalString
+              (prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) ''
+                installShellCompletion --cmd tea \
+                  --bash <($out/bin/tea completion bash) \
+                  --fish <($out/bin/tea completion fish) \
+                  --zsh <($out/bin/tea completion zsh)
+                mkdir -p $out/share/powershell
+                $out/bin/tea completion pwsh > $out/share/powershell/tea.Completion.ps1
+                $out/bin/tea man --out $out/share/man/man1/tea.1
+              '';
+
+            meta = {
+              description = "Gitea CLI client with custom HTTP headers support";
+              homepage = "https://gitea.com/gitea/tea";
+              license = prev.lib.licenses.mit;
+              mainProgram = "tea";
+            };
+          };
+        };
 
         fenix = fenix.overlays.default;
       };

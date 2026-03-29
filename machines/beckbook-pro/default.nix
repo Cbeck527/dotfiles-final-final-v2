@@ -33,15 +33,11 @@ in
       claude-code
       codex
       pi
+      qmd
+      readwise-cli
       ffmpeg
       terraform
       flyctl
-
-      # GUI Apps
-      discord
-      iina
-      inkscape
-      openscad-unstable
 
       # Meshtastic/SDR
       natscli
@@ -52,13 +48,21 @@ in
   };
 
   homebrew.casks = [
+    "openscad@snapshot"
+    "discord"
+    "iina"
+    "inkscape"
     "claude"
     "jdownloader"
     "kicad"
     "qflipper"
+    "reader"
+    "telegram"
     "transmission"
     "xcodes-app"
     "xld"
     "yaak"
+    "slack"
+    "wireshark-app"
   ];
 }

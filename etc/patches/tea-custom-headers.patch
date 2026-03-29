@@ -1,0 +1,190 @@
+diff --git a/modules/api/client.go b/modules/api/client.go
+index 853a2a0..0105d36 100644
+--- a/modules/api/client.go
++++ b/modules/api/client.go
+@@ -4,7 +4,6 @@
+ package api
+ 
+ import (
+-	"crypto/tls"
+ 	"fmt"
+ 	"io"
+ 	"log"
+@@ -13,7 +12,6 @@ import (
+ 	"strings"
+ 
+ 	"code.gitea.io/tea/modules/config"
+-	"code.gitea.io/tea/modules/httputil"
+ )
+ 
+ // Client provides direct HTTP access to Gitea API
+@@ -30,11 +28,7 @@ func NewClient(login *config.Login) *Client {
+ 		log.Printf("Warning: failed to refresh OAuth token: %v", err)
+ 	}
+ 
+-	httpClient := &http.Client{
+-		Transport: httputil.WrapTransport(&http.Transport{
+-			TLSClientConfig: &tls.Config{InsecureSkipVerify: login.Insecure},
+-		}),
+-	}
++	httpClient := &http.Client{Transport: login.BuildTransport()}
+ 
+ 	return &Client{
+ 		baseURL:    strings.TrimSuffix(login.URL, "/"),
+diff --git a/modules/auth/oauth.go b/modules/auth/oauth.go
+index 82f0b43..5fe631a 100644
+--- a/modules/auth/oauth.go
++++ b/modules/auth/oauth.go
+@@ -50,6 +50,7 @@ type OAuthOptions struct {
+ 	ClientID    string
+ 	RedirectURL string
+ 	Port        int
++	Headers     map[string]string
+ }
+ 
+ // OAuthLogin performs an OAuth2 PKCE login flow to authorize the CLI
+@@ -128,7 +129,7 @@ func performBrowserOAuthFlow(opts OAuthOptions) (serverURL string, token *oauth2
+ 
+ 	// Set up the OAuth2 config
+ 	ctx := context.Background()
+-	ctx = context.WithValue(ctx, oauth2.HTTPClient, createHTTPClient(opts.Insecure))
++	ctx = context.WithValue(ctx, oauth2.HTTPClient, createHTTPClient(opts.Insecure, opts.Headers))
+ 
+ 	// Configure the OAuth2 endpoints
+ 	authURL := fmt.Sprintf("%s/login/oauth/authorize", normalizedURL)
+@@ -195,12 +196,15 @@ func performBrowserOAuthFlow(opts OAuthOptions) (serverURL string, token *oauth2
+ 	return serverURL, token, nil
+ }
+ 
+-// createHTTPClient creates an HTTP client with optional insecure setting
+-func createHTTPClient(insecure bool) *http.Client {
++// createHTTPClient creates an HTTP client with TLS, User-Agent, and optional custom headers.
++func createHTTPClient(insecure bool, headers map[string]string) *http.Client {
+ 	return &http.Client{
+-		Transport: httputil.WrapTransport(&http.Transport{
+-			TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
+-		}),
++		Transport: httputil.WithHeaders(
++			httputil.WrapTransport(&http.Transport{
++				TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
++			}),
++			headers,
++		),
+ 	}
+ }
+ 
+@@ -439,6 +443,7 @@ func ReauthenticateLogin(login *config.Login) error {
+ 		ClientID:    config.DefaultClientID,
+ 		RedirectURL: fmt.Sprintf("http://%s:%d", redirectHost, redirectPort),
+ 		Port:        redirectPort,
++		Headers:     login.Headers,
+ 	}
+ 
+ 	_, token, err := performBrowserOAuthFlow(opts)
+diff --git a/modules/config/login.go b/modules/config/login.go
+index 0e83892..afd4b8d 100644
+--- a/modules/config/login.go
++++ b/modules/config/login.go
+@@ -55,6 +55,8 @@ type Login struct {
+ 	User string `yaml:"user"`
+ 	// Created is auto created unix timestamp
+ 	Created int64 `yaml:"created"`
++	// Headers are extra HTTP headers sent with every API request (e.g. CF-Access-Client-Id).
++	Headers map[string]string `yaml:"headers,omitempty"`
+ 	// AuthMethod indicates the authentication method ("oauth" for OAuth with credstore)
+ 	AuthMethod string `yaml:"auth_method,omitempty"`
+ 	// RefreshToken is used to renew the access token when it expires
+@@ -390,11 +392,7 @@ func doOAuthRefresh(l *Login) (*oauth2.Token, error) {
+ 
+ 	ctx := context.Background()
+ 
+-	httpClient := &http.Client{
+-		Transport: httputil.WrapTransport(&http.Transport{
+-			TLSClientConfig: &tls.Config{InsecureSkipVerify: l.Insecure},
+-		}),
+-	}
++	httpClient := &http.Client{Transport: l.BuildTransport()}
+ 	ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
+ 
+ 	oauth2Config := &oauth2.Config{
+@@ -412,6 +410,17 @@ func doOAuthRefresh(l *Login) (*oauth2.Token, error) {
+ 	return newToken, nil
+ }
+ 
++// BuildTransport returns an http.RoundTripper configured with TLS settings,
++// User-Agent, and any custom headers from this login.
++func (l *Login) BuildTransport() http.RoundTripper {
++	return httputil.WithHeaders(
++		httputil.WrapTransport(&http.Transport{
++			TLSClientConfig: &tls.Config{InsecureSkipVerify: l.Insecure},
++		}),
++		l.Headers,
++	)
++}
++
+ // Client returns a client to operate Gitea API. You may provide additional modifiers
+ // for the client like gitea.SetBasicAuth() for customization
+ func (l *Login) Client(options ...gitea.ClientOption) *gitea.Client {
+@@ -421,16 +430,18 @@ func (l *Login) Client(options ...gitea.ClientOption) *gitea.Client {
+ 	}
+ 
+ 	httpClient := &http.Client{}
++	var transport http.RoundTripper
+ 	if l.Insecure {
+ 		cookieJar, _ := cookiejar.New(nil)
+-
+-		httpClient = &http.Client{
+-			Jar: cookieJar,
+-			Transport: &http.Transport{
+-				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+-			},
++		httpClient.Jar = cookieJar
++		transport = &http.Transport{
++			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+ 		}
+ 	}
++	// WithHeaders is a no-op when Headers is empty, and handles nil base
++	// by defaulting to http.DefaultTransport. User-Agent is handled by
++	// gitea.SetUserAgent below, so we don't wrap with WrapTransport here.
++	httpClient.Transport = httputil.WithHeaders(transport, l.Headers)
+ 
+ 	// versioncheck must be prepended in options to make sure we don't hit any version checks in the sdk
+ 	if !l.VersionCheck {
+diff --git a/modules/httputil/httputil.go b/modules/httputil/httputil.go
+index e0dbe3a..a26ad9f 100644
+--- a/modules/httputil/httputil.go
++++ b/modules/httputil/httputil.go
+@@ -36,3 +36,33 @@ func (t *userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error
+ 	req.Header.Set("User-Agent", UserAgent())
+ 	return t.base.RoundTrip(req)
+ }
++
++// WithHeaders wraps an http.RoundTripper to add extra headers to every request.
++// Headers set here will not override headers already present on the request.
++func WithHeaders(base http.RoundTripper, headers map[string]string) http.RoundTripper {
++	if len(headers) == 0 {
++		return base
++	}
++	if base == nil {
++		base = http.DefaultTransport
++	}
++	h := make(map[string]string, len(headers))
++	for k, v := range headers {
++		h[k] = v
++	}
++	return &headerTransport{base: base, headers: h}
++}
++
++type headerTransport struct {
++	base    http.RoundTripper
++	headers map[string]string
++}
++
++func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
++	for key, value := range t.headers {
++		if req.Header.Get(key) == "" {
++			req.Header.Set(key, value)
++		}
++	}
++	return t.base.RoundTrip(req)
++}

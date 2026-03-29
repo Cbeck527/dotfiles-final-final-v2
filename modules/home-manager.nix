@@ -143,7 +143,7 @@
 
       programs.eza = {
         enable = true;
-        enableFishIntegration = true;
+        enableFishIntegration = false;
         theme = {
           punctuation = {
             foreground = "Default";
@@ -291,13 +291,7 @@
       };
 
       home.packages = with pkgs; [
-        # GUI Apps (moved from Homebrew casks)
         obsidian
-        clearance
-        slack
-        wireshark
-        keka
-        _1password-cli
 
         # Shell & Terminal
         aspell
@@ -343,6 +337,7 @@
         hexyl
         just
         lua-language-server
+        tea
         nixfmt
         nodejs_24
         stylua

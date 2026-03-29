@@ -30,7 +30,7 @@ let
     "qlcolorcode"
     "qlmarkdown"
     "qlstephen"
-    "qlvideo"
+    "quicklook-video"
     "quicklook-json"
     "quicklookase"
     "syntax-highlight"
@@ -41,6 +41,10 @@ let
     "choosy"
     "appcleaner"
     "apparency"
+    "keka"
+    "1password"
+    "1password-cli"
+    "latest"
 
   ];
 in
