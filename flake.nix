@@ -133,16 +133,15 @@
             nativeBuildInputs = [ prev.installShellFiles ];
             nativeCheckInputs = [ prev.writableTmpDirAsHomeHook ];
 
-            postInstall = prev.lib.optionalString
-              (prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) ''
-                installShellCompletion --cmd tea \
-                  --bash <($out/bin/tea completion bash) \
-                  --fish <($out/bin/tea completion fish) \
-                  --zsh <($out/bin/tea completion zsh)
-                mkdir -p $out/share/powershell
-                $out/bin/tea completion pwsh > $out/share/powershell/tea.Completion.ps1
-                $out/bin/tea man --out $out/share/man/man1/tea.1
-              '';
+            postInstall = prev.lib.optionalString (prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) ''
+              installShellCompletion --cmd tea \
+                --bash <($out/bin/tea completion bash) \
+                --fish <($out/bin/tea completion fish) \
+                --zsh <($out/bin/tea completion zsh)
+              mkdir -p $out/share/powershell
+              $out/bin/tea completion pwsh > $out/share/powershell/tea.Completion.ps1
+              $out/bin/tea man --out $out/share/man/man1/tea.1
+            '';
 
             meta = {
               description = "Gitea CLI client with custom HTTP headers support";

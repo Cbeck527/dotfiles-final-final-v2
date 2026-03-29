@@ -46,7 +46,7 @@ build:
 [macos]
 [group('maintain')]
 fmt:
-    nix fmt
+    find . -type f -name '*.nix' | xargs nix fmt
 
 # Garbage collect nix store
 [group('maintain')]

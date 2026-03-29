@@ -36,7 +36,9 @@ let
 in
 {
   options.custom.emacs = {
-    macMetal = lib.mkEnableOption "Mac Metal acceleration for Emacs" // { default = true; };
+    macMetal = lib.mkEnableOption "Mac Metal acceleration for Emacs" // {
+      default = true;
+    };
     cflags = {
       value = lib.mkOption {
         type = lib.types.str;
