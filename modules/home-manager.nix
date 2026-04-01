@@ -54,6 +54,18 @@
           # nx tab completions (dynamic from Justfile recipes)
           complete -c nx -f -a "(just --justfile ~/.config/nix-config/Justfile --summary | string split ' ')"
 
+          # Toggle solarized light/dark via ghostty config override
+          function toggle-solarized --description "Toggle Ghostty between Solarized Dark/Light"
+            set -l override_file ~/.config/ghostty/theme-override.ghostty
+            if test -f $override_file
+              rm $override_file
+              echo "Solarized Dark activated, press  cmd + shift + ,  to activate."
+            else
+              echo 'theme = "iTerm2 Solarized Light"' > $override_file
+              echo "Solarized Light activated, press  cmd + shift + ,  to activate."
+            end
+          end
+
           # Local machine overrides
           if test -f ~/.localrc.fish
             source ~/.localrc.fish
@@ -120,8 +132,12 @@
 
           macos-titlebar-style = "native";
           macos-titlebar-proxy-icon = "hidden";
+          macos-dock-drop-behavior = "new-window";
+
+          keybind = "global:cmd+control+t=toggle_quick_terminal";
 
           auto-update = "off";
+          config-file = "?theme-override.ghostty";
         };
       };
 
