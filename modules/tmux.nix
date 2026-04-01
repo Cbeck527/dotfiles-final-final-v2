@@ -60,7 +60,7 @@
       set -g extended-keys-format csi-u
 
       # -- navigation --------------------------------------------------------------
-      bind C-c command-prompt -p 'New session name: ' 'new-session -s "%%"'
+      bind C-c command-prompt -p 'New session name: ' 'new-session -s "%%" -c "#{pane_current_path}"'
 
       # window navigation
       unbind n
@@ -75,7 +75,7 @@
       bind | split-window -h -c "#{pane_current_path}"
 
       # new window with name
-      bind-key C command-prompt -p 'New window name:' "new-window -n %%"
+      bind-key C command-prompt -p 'New window name:' "new-window -c '#{pane_current_path}' -n %%"
 
       # pane navigation
       bind -r h select-pane -L
@@ -144,6 +144,9 @@
 
       bind J select-layout even-vertical
       bind H select-layout even-horizontal
+
+      # re-home session's default directory to current pane's cwd
+      bind M-c attach-session -t . -c "#{pane_current_path}"
 
       # source local overrides
       source -q ~/.tmux.conf.local
