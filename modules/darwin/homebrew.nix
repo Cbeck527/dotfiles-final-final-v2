@@ -25,14 +25,11 @@ let
 
     # Development
     "sublime-text"
+    "sublime-merge"
 
     # QuickLook plugins
-    "qlcolorcode"
     "qlmarkdown"
     "qlstephen"
-    "quicklook-video"
-    "quicklook-json"
-    "quicklookase"
     "syntax-highlight"
     "suspicious-package"
 

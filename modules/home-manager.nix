@@ -301,6 +301,7 @@
         fortune
         fzf
         htop
+        macmon
         pstree
         tree
         watch
@@ -379,6 +380,7 @@
         gopls
         nil # nix lsp
         terraform-ls
+        typescript
         typescript-language-server
         vscode-langservers-extracted
         yaml-language-server
