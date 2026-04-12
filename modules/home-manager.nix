@@ -23,6 +23,7 @@
         ./gpg.nix
         ./git.nix
         ./tmux.nix
+        ./llms
       ];
 
       home.stateVersion = "25.05";

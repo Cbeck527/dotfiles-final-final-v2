@@ -124,14 +124,7 @@
       # Misc
       ".ignore"
       ".envrc"
-
-      # LLM tooling
-      ".aider*"
-      ".serena*"
-      ".claude*"
-      ".mcp.json"
-      "CLAUDE*.md"
-      "AGENTS.md"
+      ".direnv/"
     ]
     ++ lib.optionals pkgs.stdenv.isDarwin [
       # macOS

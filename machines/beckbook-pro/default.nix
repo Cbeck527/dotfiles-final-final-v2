@@ -30,9 +30,6 @@ in
       };
     };
     home.packages = with pkgs; [
-      claude-code
-      codex
-      pi
       qmd
       readwise-cli
       ffmpeg

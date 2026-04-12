@@ -110,11 +110,6 @@ in
     };
 
     home.packages = with pkgs; [
-      # llms
-      claude-code
-      codex
-      pi
-
       datadog-pup
 
       # AWS SSO Integration
