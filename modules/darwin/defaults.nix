@@ -71,7 +71,7 @@
       ShowRemovableMediaOnDesktop = true;
     };
 
-    SoftwareUpdate.AutomaticallyInstallMacOSUpdates = true;
+    SoftwareUpdate.AutomaticallyInstallMacOSUpdates = false;
 
     NSGlobalDomain = {
       ApplePressAndHoldEnabled = false;
