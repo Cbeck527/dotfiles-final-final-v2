@@ -8,6 +8,7 @@
 
 let
   cfg = config.custom.emacs;
+  treeSitter026Patch = pkgs.path + "/pkgs/applications/editors/emacs/tree-sitter-0.26.patch";
 
   emacs-macport =
     (pkgs.emacs-macport.override {
@@ -22,6 +23,8 @@ let
         # Opt out of sandbox: byte-compiling url.el triggers GnuTLS cert
         # scanning of /etc/ssl/certs. Requires sandbox = "relaxed" in nix settings.
         __noChroot = true;
+
+        patches = (old.patches or [ ]) ++ [ treeSitter026Patch ];
 
         configureFlags = old.configureFlags ++ lib.optionals cfg.macMetal [ "--with-mac-metal" ];
 

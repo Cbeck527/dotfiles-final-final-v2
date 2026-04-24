@@ -69,9 +69,10 @@ audit:
 [group('flake')]
 update: update-nix update-osx update-home update-extra update-llms
 
-# Lock all flake inputs
+# Lock missing flake inputs without updating existing lock entries
 [group('flake')]
-lock: lock-nix lock-osx lock-home lock-extra lock-llms
+lock:
+    nix flake lock
 
 [private]
 update-nix:
@@ -92,23 +93,3 @@ update-extra:
 [private]
 update-llms:
     nix flake update {{ LLM_CHANNELS }}
-
-[private]
-lock-nix:
-    nix flake lock {{ NIX_CHANNELS }}
-
-[private]
-lock-osx:
-    nix flake lock {{ OSX_CHANNELS }}
-
-[private]
-lock-home:
-    nix flake lock {{ HOME_CHANNELS }}
-
-[private]
-lock-extra:
-    nix flake lock {{ EXTRA_CHANNELS }}
-
-[private]
-lock-llms:
-    nix flake lock {{ LLM_CHANNELS }}
