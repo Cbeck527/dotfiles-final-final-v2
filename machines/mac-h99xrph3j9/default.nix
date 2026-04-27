@@ -118,7 +118,7 @@ in
       # terraform version overlay and TF tooling
       terraform_1_5_7
       terragrunt
-      nodePackages_latest.prettier
+      prettier
     ];
   };
 
