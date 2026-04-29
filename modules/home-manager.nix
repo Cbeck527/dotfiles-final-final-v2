@@ -334,6 +334,7 @@
         parallel
         rsync
         wget
+        jujutsu
 
         # Search & Text Processing
         dasel
@@ -357,7 +358,8 @@
         lua-language-server
         tea
         nixfmt
-        nodejs_24
+        nodejs
+        pnpm
         stylua
         vim
 
