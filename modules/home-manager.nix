@@ -334,7 +334,6 @@
         parallel
         rsync
         wget
-        jujutsu
 
         # Search & Text Processing
         dasel

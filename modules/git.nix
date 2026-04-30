@@ -156,9 +156,35 @@
 
   };
 
+  programs.jujutsu = {
+    enable = true;
+
+    settings = {
+      user = {
+        name = config.identity.name;
+        email = config.identity.email;
+      };
+
+      ui = {
+        editor = "emacsclient";
+      };
+
+      signing = {
+        behavior = "own";
+        backend = "gpg";
+        key = config.identity.gpgKey;
+      };
+
+      git = {
+        private-commits = "description(glob:'wip:*') | description(glob:'private:*')";
+      };
+    };
+  };
+
   programs.delta = {
     enable = true;
     enableGitIntegration = true;
+    enableJujutsuIntegration = true;
     options = {
       navigate = true;
       syntax-theme = "Solarized (dark)";
