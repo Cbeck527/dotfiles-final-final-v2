@@ -66,16 +66,6 @@
     in
     {
       overlays = {
-        # Temporary workaround: direnv's Darwin shell tests hang/fail on 2.37.1.
-        # Remove this override after the upstream regressions are fixed:
-        # - https://github.com/NixOS/nixpkgs/issues/513019
-        # - https://github.com/NixOS/nixpkgs/issues/507531
-        direnv-darwin-checks = _: prev: {
-          direnv = prev.direnv.overrideAttrs (_: {
-            doCheck = false;
-          });
-        };
-
         terraform-157 = _: prev: {
           terraform_1_5_7 =
             (import inputs.nixpkgs-terraform-157 {
