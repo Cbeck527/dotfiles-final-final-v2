@@ -22,6 +22,7 @@ let
     "rectangle-pro"
     "textexpander"
     "cleanshot"
+    "markdown-preview"
 
     # Development
     "sublime-text"
@@ -64,6 +65,7 @@ in
     taps = {
       "homebrew/homebrew-core" = inputs.homebrew-core;
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
+      "pluk-inc/homebrew-tap" = inputs.homebrew-pluk;
     };
   };
 
@@ -93,6 +95,7 @@ in
     taps = [
       "homebrew/core"
       "homebrew/cask"
+      "pluk-inc/tap"
     ];
 
     casks = lib.filter (c: !(builtins.elem c config.custom.homebrew.excludeCasks)) baseCasks;

@@ -56,7 +56,7 @@ The main inputs currently include:
 - `nix-darwin`
 - `home-manager`
 - `nix-homebrew`
-- pinned `homebrew-core` and `homebrew-cask`
+- pinned `homebrew-core`, `homebrew-cask`, and the Pluk Homebrew tap
 - `fenix`
 - `llm-agents-nix`
 - private `nix-config-private`
@@ -75,7 +75,7 @@ The main inputs currently include:
 - `bootstrap/darwin.nix` owns shared Nix settings, trusted users, shell setup, and the Darwin state version.
 - `modules/home-manager.nix` owns the shared user layer and imports `identity.nix`, `gpg.nix`, `git.nix`, `tmux.nix`, and `modules/llms`.
 - `modules/darwin/homebrew.nix` defines the base cask set and the `custom.homebrew.excludeCasks` option used for host-specific filtering.
-- `modules/darwin/packages.nix` adds Darwin-specific packages, including the custom `clearance` package.
+- `modules/darwin/packages.nix` adds Darwin-specific Home Manager packages.
 - `modules/darwin/services.nix` currently defines the `services.caffeinate` launchd daemon option.
 - GUI apps are surfaced via `targets.darwin.copyApps.directory = "Applications/HomeManager"`.
 - Host files commonly extend `home-manager.users.<name>` and `homebrew.*` for per-machine customization.

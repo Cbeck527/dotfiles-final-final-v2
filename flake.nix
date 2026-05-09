@@ -35,6 +35,10 @@
       url = "github:homebrew/homebrew-cask";
       flake = false;
     };
+    homebrew-pluk = {
+      url = "github:pluk-inc/homebrew-tap";
+      flake = false;
+    };
 
     # better Rust
     fenix = {

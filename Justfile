@@ -15,7 +15,7 @@ mod local
 
 NIX_CHANNELS := "nixpkgs"
 HOME_CHANNELS := "home-manager"
-OSX_CHANNELS := "nix-darwin nix-homebrew homebrew-core homebrew-cask"
+OSX_CHANNELS := "nix-darwin nix-homebrew homebrew-core homebrew-cask homebrew-pluk"
 EXTRA_CHANNELS := "fenix nix-config-private"
 LLM_CHANNELS := "llm-agents-nix"
 

@@ -26,7 +26,7 @@
       };
 
       init = {
-        defaultBranch = "trunk";
+        defaultBranch = "main";
       };
 
       pull = {
