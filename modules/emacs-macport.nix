@@ -33,6 +33,10 @@ let
               cfg.cflags.value;
         };
       });
+
+  emacs-lsp-booster = pkgs.emacs-lsp-booster.override {
+    emacs = emacs-macport;
+  };
 in
 {
   options.custom.emacs = {
@@ -54,6 +58,9 @@ in
   };
 
   config = {
-    home-manager.users.${username}.home.packages = [ emacs-macport ];
+    home-manager.users.${username}.home.packages = [
+      emacs-macport
+      emacs-lsp-booster
+    ];
   };
 }

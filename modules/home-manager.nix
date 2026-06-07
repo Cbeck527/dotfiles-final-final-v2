@@ -392,7 +392,6 @@
         bash-language-server
         buf # protobufs
         dockerfile-language-server
-        emacs-lsp-booster
         fish-lsp
         go-grip
         golangci-lint
