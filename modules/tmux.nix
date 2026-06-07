@@ -32,11 +32,14 @@
           set -g @prefix_highlight_show_sync_mode 'on'
           set -g @prefix_highlight_sync_mode_attr 'fg=red,bold'
           set -g @prefix_highlight_sync_prompt 'SYNC'
+          # prefix-highlight rewrites this placeholder when the plugin loads.
+          set -g status-right '#{prefix_highlight} #(whoami)@#H'
         '';
       }
       {
         plugin = resurrect;
         extraConfig = ''
+          set -g @resurrect-dir '~/.local/state/tmux/resurrect'
           set -g @resurrect-capture-pane-contents 'on'
           set -g @resurrect-strategy-vim 'session'
           set -g @resurrect-strategy-nvim 'session'
@@ -113,7 +116,6 @@
       # statusline
       set -g status-justify absolute-centre
       set -g status-left '#[fg=default][ #[fg=blue]#S #[fg=default]]'
-      set -g status-right '#{prefix_highlight} #(whoami)@#H'
       set -g status-right-length 1000
       set -g status-left-length 1000
       set -g status-style fg=cyan,bg=black

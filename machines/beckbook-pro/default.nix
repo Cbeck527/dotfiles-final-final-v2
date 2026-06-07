@@ -24,6 +24,10 @@ in
 
   # home-manager customizations
   home-manager.users.${username} = {
+    imports = [
+      ../../modules/crush.nix
+    ];
+
     programs.atuin = {
       settings = {
         sync_address = "https://shellsync.cmb.software";

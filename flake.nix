@@ -27,6 +27,7 @@
 
     # homebrew
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    nix-homebrew.inputs.brew-src.url = "github:Homebrew/brew/5.1.14";
     homebrew-core = {
       url = "github:homebrew/homebrew-core";
       flake = false;
@@ -35,14 +36,16 @@
       url = "github:homebrew/homebrew-cask";
       flake = false;
     };
-    homebrew-pluk = {
-      url = "github:pluk-inc/homebrew-tap";
-      flake = false;
-    };
 
     # better Rust
     fenix = {
       url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Charm tools (crush, glow, etc.)
+    charmbracelet = {
+      url = "github:charmbracelet/nur";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

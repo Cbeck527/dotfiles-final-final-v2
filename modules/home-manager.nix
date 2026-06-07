@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  inputs,
   username,
   userHome,
   ...
@@ -17,6 +18,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "hm-backup";
+    extraSpecialArgs = { inherit inputs; };
     users.${username} = {
       imports = [
         ./identity.nix
@@ -340,7 +342,6 @@
         fd
         jq
         shellcheck
-        silver-searcher
         yq
 
         # Development Tools
