@@ -119,6 +119,9 @@ in
       terraform_1_5_7
       terragrunt
       prettier
+
+      # work is anthropic only
+      claude-code
     ];
   };
 

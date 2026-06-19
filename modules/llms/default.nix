@@ -3,6 +3,8 @@
 {
   imports = [
     ./pi.nix
+    ./omp.nix
+    ./crush.nix
   ];
 
   home.packages = with pkgs; [

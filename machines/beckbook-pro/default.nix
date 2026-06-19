@@ -25,7 +25,7 @@ in
   # home-manager customizations
   home-manager.users.${username} = {
     imports = [
-      ../../modules/crush.nix
+      ../../modules/llms
     ];
 
     programs.atuin = {

@@ -88,6 +88,7 @@
             inherit (agentPkgs)
               claude-code
               codex
+              omp
               pi
               qmd
               ;
