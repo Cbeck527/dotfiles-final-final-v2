@@ -1,6 +1,5 @@
 {
   pkgs,
-  inputs,
   ...
 }:
 let
@@ -37,14 +36,6 @@ in
       qmd
       readwise-cli
       ffmpeg
-      terraform
-      flyctl
-
-      # Meshtastic/SDR
-      natscli
-      nats-server
-      platformio-core
-      urh
     ];
   };
 
@@ -53,10 +44,8 @@ in
     "discord"
     "iina"
     "inkscape"
-    "claude"
     "jdownloader"
     "kicad"
-    "qflipper"
     "reader"
     "telegram"
     "transmission"

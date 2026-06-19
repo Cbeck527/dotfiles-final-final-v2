@@ -1,6 +1,5 @@
 {
   pkgs,
-  lib,
   inputs,
   username,
   userHome,
