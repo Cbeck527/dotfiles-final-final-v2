@@ -1,6 +1,7 @@
 {
   pkgs,
   inputs,
+  lib,
   username,
   userHome,
   ...
@@ -307,110 +308,119 @@
         cli.enable = true;
       };
 
-      home.packages = with pkgs; [
-        obsidian
+      home.packages =
+        with pkgs;
+        [
+          obsidian
 
-        # Shell & Terminal
-        aspell
-        btop
-        cowsay
-        fastfetch
-        fortune
-        fzf
-        htop
-        macmon
-        pstree
-        tree
-        watch
-        zoxide
+          # Shell & Terminal
+          aspell
+          btop
+          cowsay
+          fastfetch
+          fortune
+          fzf
+          htop
+          macmon
+          pstree
+          tree
+          watch
+          zoxide
 
-        # Core Utilities
-        curl
-        findutils
-        gawk
-        gnumake
-        gnused
-        less
-        parallel
-        rsync
-        wget
+          # Core Utilities
+          curl
+          findutils
+          gawk
+          gnumake
+          gnused
+          less
+          parallel
+          rsync
+          wget
 
-        # Search & Text Processing
-        dasel
-        fd
-        jq
-        shellcheck
-        yq
+          # Search & Text Processing
+          dasel
+          fd
+          jq
+          shellcheck
+          yq
 
-        # Development Tools
-        automake
-        chezmoi
-        clang-tools
-        cmake
-        dprint
-        git-lfs
-        gh
-        go
-        hexyl
-        just
-        lua-language-server
-        tea
-        nixfmt
-        nodejs
-        pnpm
-        stylua
-        vim
+          # Development Tools
+          automake
+          chezmoi
+          clang-tools
+          cmake
+          dprint
+          git-lfs
+          gh
+          go
+          hexyl
+          just
+          lua-language-server
+          tea
+          nixfmt
+          nodejs
+          pnpm
+          stylua
+          vim
 
-        # Better Rust w/ nix-community fenix
-        cargo-deny
-        cargo-expand
-        cargo-fuzz
-        (pkgs.fenix.stable.withComponents [
-          "cargo"
-          "clippy"
-          "rust-analyzer"
-          "rust-src"
-          "rustc"
-          "rustfmt"
-        ])
+          # Better Rust w/ nix-community fenix
+          cargo-deny
+          cargo-expand
+          cargo-fuzz
+          (pkgs.fenix.stable.withComponents [
+            "cargo"
+            "clippy"
+            "rust-analyzer"
+            "rust-src"
+            "rustc"
+            "rustfmt"
+          ])
 
-        # Cloud & Infrastructure
-        awscli
-        colima
-        ctop
-        docker
-        docker-buildx
-        kubectl
-        kubernetes-helm
+          # Cloud & Infrastructure
+          awscli
+          colima
+          ctop
+          docker
+          docker-buildx
+          kubectl
+          kubernetes-helm
 
-        # Languages / LSP
-        astro-language-server
-        awk-language-server
-        basedpyright
-        bash-language-server
-        buf # protobufs
-        dockerfile-language-server
-        fish-lsp
-        go-grip
-        golangci-lint
-        gopls
-        nil # nix lsp
-        terraform-ls
-        typescript
-        typescript-language-server
-        vscode-langservers-extracted
-        yaml-language-server
+          # Languages / LSP
+          astro-language-server
+          awk-language-server
+          basedpyright
+          bash-language-server
+          buf # protobufs
+          dockerfile-language-server
+          fish-lsp
+          go-grip
+          golangci-lint
+          gopls
+          nil # nix lsp
+          terraform-ls
+          typescript
+          typescript-language-server
+          vscode-langservers-extracted
+          yaml-language-server
 
-        # Network Tools
-        netcat
-        nmap
-        socat
-        websocat
+          # Network Tools
+          netcat
+          nmap
+          socat
+          websocat
 
-        # Other
-        typst
-        zstd
-      ];
+          # Other
+          typst
+          zstd
+        ]
+        ++ (lib.optionals pkgs.stdenv.isDarwin [
+          minijinja
+          pinentry_mac
+          (python3.withPackages (ps: [ ps.pip ]))
+          terminal-notifier
+          mas
+        ]);
     };
   };
 }
