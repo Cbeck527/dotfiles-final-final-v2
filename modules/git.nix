@@ -19,7 +19,6 @@
 
       core = {
         editor = "emacsclient";
-        ignorecase = true;
         untrackedCache = true;
         preloadindex = true;
         fscache = true;
@@ -90,6 +89,8 @@
         user = config.identity.githubUser;
       };
 
+      # The empty string in the helper list resets inherited helpers (e.g. the
+      # global osxkeychain above), so only `gh auth git-credential` is used for GitHub.
       "credential \"https://github.com\"" = {
         helper = [
           ""

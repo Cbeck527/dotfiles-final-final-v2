@@ -99,6 +99,8 @@ in
           style = "compact";
           filter_mode = "host";
           enter_accept = false;
+          # Disabled: commands containing tokens are synced to the atuin server.
+          # Re-enable if syncing sensitive commands becomes a concern.
           secrets_filter = false;
           show_help = false;
           update_check = false;
@@ -317,9 +319,7 @@ in
           # Shell & Terminal
           aspell
           btop
-          cowsay
           fastfetch
-          fortune
           fzf
           htop
           macmon
