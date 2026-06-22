@@ -17,13 +17,13 @@ Both hosts are declared in `flake.nix` and build `aarch64-darwin` systems.
 - `flake.nix`: flake inputs, overlays, formatter, and `darwinConfigurations`
 - `Justfile`: primary operator workflow
 - `local.just`: local overrides loaded by `mod local`
-- `bootstrap/darwin.nix`: shared base Nix settings, shells, and `system.stateVersion`
 - `machines/<hostname>/default.nix`: host-specific configuration entry points
 - `modules/home-manager.nix`: shared Home Manager user configuration
 - `modules/identity.nix`, `modules/git.nix`, `modules/gpg.nix`, `modules/tmux.nix`, `modules/emacs-macport.nix`: shared feature modules
-- `modules/llms/default.nix` and `modules/llms/pi.nix`: shared LLM CLI package setup
-- `modules/crush.nix`: Crush (Charmbracelet) Home Manager module via NUR — only imported on `beckbook-pro`
-- `modules/darwin/defaults.nix`, `modules/darwin/homebrew.nix`, `modules/darwin/packages.nix`, `modules/darwin/services.nix`: Darwin-only modules
+- `modules/llms/default.nix`, `modules/llms/pi.nix`, `modules/llms/omp.nix`: shared LLM CLI package setup
+- `modules/llms/crush.nix`: Crush (Charmbracelet) Home Manager module via NUR — only imported on `beckbook-pro`
+- `modules/machine.nix`: darwin-level options for `machine.username` and `machine.home`
+- `modules/darwin/defaults.nix`, `modules/darwin/homebrew.nix`, `modules/darwin/services.nix`: Darwin-only modules
 - `scripts/audit-flake-inputs.sh`: flake input audit helper
 - `etc/patches/tea-custom-headers.patch`: patch used by the custom `tea` overlay
 - `etc/doc/`: documentation assets
@@ -61,6 +61,7 @@ The main inputs currently include:
 - `nix-homebrew`
 - pinned `homebrew-core`, `homebrew-cask`
 - `fenix`
+- `charmbracelet` (Charm tools NUR)
 - `llm-agents-nix`
 - private `nix-config-private`
 
@@ -68,25 +69,25 @@ The main inputs currently include:
 `flake.nix` currently defines these overlays:
 
 - `terraform-157`: exposes `terraform_1_5_7`
-- `llm-agents`: exposes `claude-code`, `codex`, `pi`, and `qmd`
+- `llm-agents`: exposes `claude-code`, `codex`, `omp`, `pi`, and `qmd`
 - `readwise-cli`: packages a pinned upstream release
 - `tea`: packages a custom patched `tea` build using `etc/patches/tea-custom-headers.patch`
+- `datadog-pup`: packages the DataDog `pup` binary for macOS arm64
 - `fenix`
 
 ### Shared configuration patterns
 
-- `bootstrap/darwin.nix` owns shared Nix settings, trusted users, shell setup, and the Darwin state version.
+- `modules/darwin/defaults.nix` owns shared Nix settings, trusted users, shell setup, sandbox config, garbage collection, and the Darwin state version.
 - `modules/home-manager.nix` owns the shared user layer and imports `identity.nix`, `gpg.nix`, `git.nix`, `tmux.nix`, and `modules/llms`.
 - `modules/darwin/homebrew.nix` defines the base cask set and the `custom.homebrew.excludeCasks` option used for host-specific filtering.
-- `modules/darwin/packages.nix` adds Darwin-specific Home Manager packages.
 - `modules/darwin/services.nix` currently defines the `services.caffeinate` launchd daemon option.
 - GUI apps are surfaced via `targets.darwin.copyApps.directory = "Applications/HomeManager"`.
 - Host files commonly extend `home-manager.users.<name>` and `homebrew.*` for per-machine customization.
 - `modules/identity.nix` defines `options.identity` (name, email, gpgKey, githubUser) consumed by `git.nix` and `gpg.nix` via `config.identity.*`.
 
 ### Host-specific patterns
-- `beckbook-pro`: sets `_module.args = { inherit username userHome; }` to pass username/userHome to all imported modules. Adds personal packages (qmd, readwise-cli, ffmpeg, terraform, SDR tools, etc.) and many additional casks.
-- `mac-h99xrph3j9`: receives `username` via `_module.args` from its private module (not defined locally like `beckbook-pro`). Uses `nix.settings.trusted-users = lib.mkAfter [ username ]` to add the work user. Excludes the `contexts` cask via `custom.homebrew.excludeCasks`. Defines a local `datadog-pup` derivation and custom k9s views for Kubernetes work.
+- `beckbook-pro`: sets `machine.username` and `machine.home` directly. Adds personal packages (qmd, readwise-cli, ffmpeg, terraform, SDR tools, etc.) and many additional casks.
+- `mac-h99xrph3j9`: bridges `machine.username` and `machine.home` from the private module's `_module.args`. Uses `nix.settings.trusted-users = lib.mkAfter [ username ]` to add the work user. Excludes the `contexts` cask via `custom.homebrew.excludeCasks`. Uses the `datadog-pup` overlay and custom k9s views for Kubernetes work.
 
 ## Gotchas & Non-Obvious Patterns
 
@@ -110,10 +111,10 @@ Both must be kept in sync when adding or removing taps.
 Sensitive values live in a separate private flake: `nix-config-private`. It provides `darwinModules.<hostname>` for each host. `local.just` overrides `check`, `build`, and `switch` to use a local path instead of the remote. Never commit secrets or machine-private values.
 
 ### Nix config: accept-flake-config
-`bootstrap/darwin.nix` sets `nix.settings.accept-flake-config = true`, which auto-accepts `nixConfig` from flakes (e.g. `extra-substituters`). This is what allows `flake.nix`'s `nixConfig.extra-substituters` to take effect without manual confirmation.
+`modules/darwin/defaults.nix` sets `nix.settings.accept-flake-config = true`, which auto-accepts `nixConfig` from flakes (e.g. `extra-substituters`). This is what allows `flake.nix`'s `nixConfig.extra-substituters` to take effect without manual confirmation.
 
-### Module args: username/userHome
-`beckbook-pro` defines `username` and `userHome` locally and passes them via `_module.args`, making them available as function arguments to all imported modules. `mac-h99xrph3j9` receives `username` from its private module's `_module.args` instead. Modules that declare `username` or `userHome` as function parameters must be used on hosts that provide them.
+### Machine options: username/home
+Both hosts set `machine.username` and `machine.home` (defined in `modules/machine.nix`). `beckbook-pro` sets them directly; `mac-h99xrph3j9` bridges them from the private module's `_module.args`. All modules that need the username or home directory read `config.machine.username` or `config.machine.home`.
 
 ### Ghostty theme override
 `modules/home-manager.nix` configures Ghostty with `config-file = "?theme-override.ghostty"` — the `?` makes the config file optional. The `toggle-solarized` fish function creates/deletes `~/.config/ghostty/theme-override.ghostty` to switch between Solarized Dark and Light. Don't remove this without understanding the toggle mechanism.
@@ -122,7 +123,7 @@ Sensitive values live in a separate private flake: `nix-config-private`. It prov
 Users run nix-config operations via the `nx` fish function (e.g. `nx switch`), which wraps `just --justfile ~/.config/nix-config/Justfile --working-directory ~/.config/nix-config`. All just recipes can be run from any directory via `nx`.
 
 ### keep-outputs and keep-derivations
-Both `nix.settings.keep-outputs` and `nix.settings.keep-derivations` are set to `true` in `bootstrap/darwin.nix`. This increases disk usage but prevents GC from breaking running processes.
+Both `nix.settings.keep-outputs` and `nix.settings.keep-derivations` are set to `true` in `modules/darwin/defaults.nix`. This increases disk usage but prevents GC from breaking running processes.
 
 ## Editing Guidelines
 
