@@ -67,9 +67,6 @@
       nix-config-private,
       ...
     }@inputs:
-    let
-      inherit (self) outputs;
-    in
     {
       overlays = {
         terraform-157 = _: prev: {
@@ -159,6 +156,21 @@
           };
         };
 
+        datadog-pup =
+          _: prev:
+          prev.stdenv.mkDerivation (finalAttrs: {
+            pname = "datadog-pup";
+            version = "0.27.0";
+            src = prev.fetchurl {
+              url = "https://github.com/DataDog/pup/releases/download/v${finalAttrs.version}/pup_${finalAttrs.version}_Darwin_arm64.tar.gz";
+              hash = "sha256-beHU+qv/wv9Fa3oBHlGKjipoIF2Wcnq8CFz1xlyeVwk=";
+            };
+            sourceRoot = ".";
+            installPhase = ''
+              install -Dm755 pup $out/bin/pup
+            '';
+          });
+
         fenix = fenix.overlays.default;
       };
 
@@ -168,9 +180,18 @@
         # Personal
         beckbook-pro = nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          specialArgs = { inherit inputs outputs; };
+          specialArgs = { inherit inputs; };
           modules = [
-            { nixpkgs.overlays = builtins.attrValues self.overlays; }
+            {
+              nixpkgs.overlays = [
+                self.overlays.fenix
+                self.overlays.terraform-157
+                self.overlays.llm-agents
+                self.overlays.readwise-cli
+                self.overlays.tea
+                self.overlays.datadog-pup
+              ];
+            }
             nix-homebrew.darwinModules.nix-homebrew
             home-manager.darwinModules.home-manager
             nix-config-private.darwinModules.beckbook-pro
@@ -181,9 +202,18 @@
         # work
         mac-h99xrph3j9 = nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          specialArgs = { inherit inputs outputs; };
+          specialArgs = { inherit inputs; };
           modules = [
-            { nixpkgs.overlays = builtins.attrValues self.overlays; }
+            {
+              nixpkgs.overlays = [
+                self.overlays.fenix
+                self.overlays.terraform-157
+                self.overlays.llm-agents
+                self.overlays.readwise-cli
+                self.overlays.tea
+                self.overlays.datadog-pup
+              ];
+            }
             nix-homebrew.darwinModules.nix-homebrew
             home-manager.darwinModules.home-manager
             nix-config-private.darwinModules.mac-h99xrph3j9
