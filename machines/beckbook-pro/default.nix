@@ -1,13 +1,11 @@
 {
   pkgs,
+  config,
   ...
 }:
-let
-  username = "chris";
-  userHome = "/Users/chris";
-in
 {
   imports = [
+    ../../modules/machine.nix
     ../../modules/darwin/defaults.nix
     ../../modules/darwin/homebrew.nix
     ../../modules/darwin/services.nix
@@ -15,12 +13,13 @@ in
     ../../modules/emacs-macport.nix
   ];
 
-  system.primaryUser = username;
+  machine.username = "chris";
+  machine.home = "/Users/chris";
 
-  _module.args = { inherit username userHome; };
+  system.primaryUser = "chris";
 
   # home-manager customizations
-  home-manager.users.${username} = {
+  home-manager.users.${config.machine.username} = {
     imports = [
       ../../modules/llms
     ];

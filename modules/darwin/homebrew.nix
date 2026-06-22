@@ -2,7 +2,6 @@
   config,
   lib,
   inputs,
-  username,
   ...
 }:
 
@@ -57,7 +56,7 @@ in
   config.nix-homebrew = {
     enable = true;
     enableRosetta = true;
-    user = username;
+    user = config.machine.username;
     autoMigrate = true;
 
     # taps in /opt/homebrew/Library/Taps/ are linked to nix store

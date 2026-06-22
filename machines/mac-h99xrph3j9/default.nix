@@ -2,16 +2,21 @@
   pkgs,
   lib,
   username,
+  userHome,
   ...
 }:
 {
   imports = [
+    ../../modules/machine.nix
     ../../modules/darwin/defaults.nix
     ../../modules/darwin/homebrew.nix
     ../../modules/darwin/services.nix
     ../../modules/home-manager.nix
     ../../modules/emacs-macport.nix
   ];
+
+  machine.username = username;
+  machine.home = userHome;
 
   nix.settings.trusted-users = lib.mkAfter [ username ];
 

@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  username,
   ...
 }:
 
@@ -58,7 +57,7 @@ in
   };
 
   config = {
-    home-manager.users.${username}.home.packages = [
+    home-manager.users.${config.machine.username}.home.packages = [
       emacs-macport
       emacs-lsp-booster
     ];

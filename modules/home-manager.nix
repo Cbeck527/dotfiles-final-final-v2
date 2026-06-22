@@ -2,16 +2,17 @@
   pkgs,
   inputs,
   lib,
-  username,
-  userHome,
+  config,
   ...
 }:
-
+let
+  inherit (config.machine) username home;
+in
 {
   # Common user configuration shared across all machines
   users.users.${username} = {
-    home = userHome;
-    description = username;
+    home = home;
+    description = "Chris Becker";
   };
 
   home-manager = {
@@ -192,7 +193,7 @@
         settings = {
           k9s = {
             liveViewAutoRefresh = true;
-            screenDumpDir = "${userHome}/Downloads/k9s-screen-dumps";
+            screenDumpDir = "${home}/Downloads/k9s-screen-dumps";
             refreshRate = 2;
             maxConnRetry = 5;
             readOnly = false;
