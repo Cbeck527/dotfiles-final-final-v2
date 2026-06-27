@@ -156,9 +156,8 @@
           };
         };
 
-        datadog-pup =
-          _: prev:
-          prev.stdenv.mkDerivation (finalAttrs: {
+        datadog-pup = _: prev: {
+          datadog-pup = prev.stdenv.mkDerivation (finalAttrs: {
             pname = "datadog-pup";
             version = "0.27.0";
             src = prev.fetchurl {
@@ -170,6 +169,7 @@
               install -Dm755 pup $out/bin/pup
             '';
           });
+        };
 
         fenix = fenix.overlays.default;
       };
