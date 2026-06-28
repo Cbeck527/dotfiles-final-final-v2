@@ -115,9 +115,8 @@ Darwin hosts remain nix-darwin system modules. They should import Darwin system
 modules and configure their Home Manager user explicitly where host-specific
 behavior matters.
 
-The current Darwin Home Manager glue should move from `modules/home-manager.nix`
-to a Darwin-scoped path such as `modules/darwin/home-manager.nix`, because it is
-not a pure Home Manager module.
+Darwin Home Manager glue lives at `modules/darwin/home-manager.nix`, because it
+is not a pure Home Manager module.
 
 ## Flake Outputs
 
