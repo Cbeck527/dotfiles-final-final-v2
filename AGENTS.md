@@ -46,11 +46,10 @@ Use `just` from the repository root.
 - `just update`: update all tracked flake input groups
 - `just update-nix`, `just update-osx`, `just update-home`, `just update-extra`, `just update-llms`: update specific input groups
 - `just lock`: relock all tracked flake input groups without updating them
-- `just lock-nix`, `just lock-osx`, `just lock-home`, `just lock-extra`, `just lock-llms`: relock specific input groups
 
-`Justfile` loads `local.just` with `mod local`. In this checkout, `check`, `build`, and `switch` are overridden to use the local private config at `~/.config/nix-config-private` via `--override-input nix-config-private "path:$HOME/.config/nix-config-private"`.
+`Justfile` loads `local.just` with `mod local`. Use `just local::check`, `just local::build`, and `just local::switch` for the local private config. Top-level `just check`, `just build`, and `just switch` do not use the local private path.
 
-The `nx` fish function (defined in `modules/programs/fish.nix`) wraps `just` for running nix-config recipes from any directory: `nx switch`, `nx check`, etc.
+The `nx` fish function (defined in `modules/programs/fish.nix`) wraps `just` for running nix-config recipes from any directory: `nx switch`, `nx check`, `nx local::check`, etc.
 
 ## Current Architecture
 
@@ -112,7 +111,7 @@ Taps are declared in **two places** — this is intentional:
 Both must be kept in sync when adding or removing taps.
 
 ### Private config
-Sensitive values live in a separate private flake: `nix-config-private`. It provides `darwinModules.<hostname>` for each host. `local.just` overrides `check`, `build`, and `switch` to use a local path instead of the remote. Never commit secrets or machine-private values.
+Sensitive values live in a separate private flake: `nix-config-private`. It provides `darwinModules.<hostname>` for each host. Use `just local::check`, `just local::build`, or `just local::switch` when you need the local private path instead of the locked remote input. Never commit secrets or machine-private values.
 
 ### Nix config: accept-flake-config
 `modules/darwin/defaults.nix` sets `nix.settings.accept-flake-config = true`, which auto-accepts `nixConfig` from flakes (e.g. `extra-substituters`). This is what allows `flake.nix`'s `nixConfig.extra-substituters` to take effect without manual confirmation.
