@@ -23,6 +23,7 @@ in
     users.${username} = {
       imports = [
         ../shared/identity.nix
+        ../programs/fish.nix
         ../programs/gpg.nix
         ../programs/git.nix
         ../programs/tmux.nix
@@ -38,42 +39,19 @@ in
 
       programs.home-manager.enable = true;
 
-      programs.fish = {
-        enable = true;
-        interactiveShellInit = ''
-          # nix-config wrapper: run just recipes from anywhere
-          function nx --description "Run nix-config recipes via just"
-            set -l justfile ~/.config/nix-config/Justfile
-            set -l workdir ~/.config/nix-config
-
-            if test (count $argv) -eq 0
-              just --justfile $justfile --working-directory $workdir --list
-            else
-              just --justfile $justfile --working-directory $workdir $argv
-            end
+      programs.fish.interactiveShellInit = ''
+        # Toggle solarized light/dark via ghostty config override
+        function toggle-solarized --description "Toggle Ghostty between Solarized Dark/Light"
+          set -l override_file ~/.config/ghostty/theme-override.ghostty
+          if test -f $override_file
+            rm $override_file
+            echo "Solarized Dark activated, press  cmd + shift + ,  to activate."
+          else
+            echo 'theme = "iTerm2 Solarized Light"' > $override_file
+            echo "Solarized Light activated, press  cmd + shift + ,  to activate."
           end
-
-          # nx tab completions (dynamic from Justfile recipes)
-          complete -c nx -f -a "(just --justfile ~/.config/nix-config/Justfile --summary | string split ' ')"
-
-          # Toggle solarized light/dark via ghostty config override
-          function toggle-solarized --description "Toggle Ghostty between Solarized Dark/Light"
-            set -l override_file ~/.config/ghostty/theme-override.ghostty
-            if test -f $override_file
-              rm $override_file
-              echo "Solarized Dark activated, press  cmd + shift + ,  to activate."
-            else
-              echo 'theme = "iTerm2 Solarized Light"' > $override_file
-              echo "Solarized Light activated, press  cmd + shift + ,  to activate."
-            end
-          end
-
-          # Local machine overrides
-          if test -f ~/.localrc.fish
-            source ~/.localrc.fish
-          end
-        '';
-      };
+        end
+      '';
 
       programs.direnv = {
         enable = true;
