@@ -1,6 +1,6 @@
 {
   imports = [
-    ../../modules/home/headless.nix
+    ../../../modules/home/headless.nix
   ];
 
   machine.username = "chris";

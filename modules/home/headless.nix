@@ -8,12 +8,12 @@ let
 in
 {
   imports = [
-    ../machine.nix
-    ./nix.nix
-    ../identity.nix
-    ../gpg.nix
-    ../git.nix
-    ../tmux.nix
+    ../shared/machine.nix
+    ../linux/nix.nix
+    ../shared/identity.nix
+    ../programs/gpg.nix
+    ../programs/git.nix
+    ../programs/tmux.nix
   ];
 
   home = {

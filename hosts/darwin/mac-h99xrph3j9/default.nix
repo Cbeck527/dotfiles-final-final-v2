@@ -7,12 +7,12 @@
 }:
 {
   imports = [
-    ../../modules/machine.nix
-    ../../modules/darwin/defaults.nix
-    ../../modules/darwin/homebrew.nix
-    ../../modules/darwin/services.nix
-    ../../modules/home-manager.nix
-    ../../modules/emacs-macport.nix
+    ../../../modules/shared/machine.nix
+    ../../../modules/darwin/defaults.nix
+    ../../../modules/darwin/homebrew.nix
+    ../../../modules/darwin/services.nix
+    ../../../modules/darwin/home-manager.nix
+    ../../../modules/darwin/emacs-macport.nix
   ];
 
   machine.username = username;

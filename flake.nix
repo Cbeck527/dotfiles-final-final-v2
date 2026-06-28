@@ -195,7 +195,7 @@
             nix-homebrew.darwinModules.nix-homebrew
             home-manager.darwinModules.home-manager
             nix-config-private.darwinModules.beckbook-pro
-            ./machines/beckbook-pro/default.nix
+            ./hosts/darwin/beckbook-pro/default.nix
           ];
         };
 
@@ -217,7 +217,7 @@
             nix-homebrew.darwinModules.nix-homebrew
             home-manager.darwinModules.home-manager
             nix-config-private.darwinModules.mac-h99xrph3j9
-            ./machines/mac-h99xrph3j9/default.nix
+            ./hosts/darwin/mac-h99xrph3j9/default.nix
           ];
         };
       };
@@ -230,7 +230,7 @@
           };
           extraSpecialArgs = { inherit inputs; };
           modules = [
-            ./machines/sweetums/default.nix
+            ./hosts/linux/sweetums/default.nix
           ];
         };
       };

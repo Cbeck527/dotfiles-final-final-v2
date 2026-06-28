@@ -22,10 +22,10 @@ in
     extraSpecialArgs = { inherit inputs; };
     users.${username} = {
       imports = [
-        ./identity.nix
-        ./gpg.nix
-        ./git.nix
-        ./tmux.nix
+        ../shared/identity.nix
+        ../programs/gpg.nix
+        ../programs/git.nix
+        ../programs/tmux.nix
       ];
 
       home.stateVersion = "25.05";
