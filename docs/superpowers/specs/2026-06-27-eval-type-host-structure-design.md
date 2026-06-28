@@ -6,7 +6,7 @@ Reorganize the repository so each path makes the Nix evaluation type obvious.
 This should make new Linux machine onboarding easier to reason about while
 keeping host configurations explicit and easy to skim.
 
-## Current Problem
+## Original Problem
 
 The current `machines/` tree mixes different kinds of modules:
 

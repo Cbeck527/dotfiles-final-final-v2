@@ -36,7 +36,7 @@ Keep new config split by evaluation type and concern. Darwin system behavior bel
 ## Commands
 Use `just` from the repository root.
 
-- `just switch`: apply the current host configuration with `darwin-rebuild switch`
+- `just switch`: apply the current host configuration. On Darwin, this runs `darwin-rebuild` in switch mode; on Linux, it builds `.#homeConfigurations.<hostname>.activationPackage` and runs `./result/activate`.
 - `just check`: run `nix flake check`
 - `just build`: build the current host's Darwin system or Home Manager activation package
 - `just fmt`: format `*.nix` files with `nix fmt`
@@ -98,7 +98,7 @@ The main inputs currently include:
 This config uses **Lix** instead of standard Nix: `nix.package = pkgs.lix` in `modules/darwin/defaults.nix`. Don't assume CppNix-specific behavior.
 
 ### Formatter: nixfmt
-`nix fmt` uses `nixfmt` (not nixpkgs-fmt, alejandra, or nixfmt-rfc-style). The formatter is declared in `flake.nix` as `formatter.aarch64-darwin = inputs.nixpkgs.legacyPackages.aarch64-darwin.nixfmt`.
+`nix fmt` uses `nixfmt` (not nixpkgs-fmt, alejandra, or nixfmt-rfc-style). `flake.nix` declares nixfmt formatters for both `aarch64-darwin` and `x86_64-linux`.
 
 ### Relaxed sandbox for Emacs
 Nix sandbox is set to `"relaxed"` (not the default `"true"`) because `modules/darwin/emacs-macport.nix` sets `__noChroot = true` on the Emacs derivation. Byte-compiling `url.el` triggers GnuTLS cert scanning of `/etc/ssl/certs`, which strict sandboxing blocks. If you change the Emacs derivation, this relationship must be maintained.
@@ -111,7 +111,7 @@ Taps are declared in **two places** — this is intentional:
 Both must be kept in sync when adding or removing taps.
 
 ### Private config
-Sensitive values live in a separate private flake: `nix-config-private`. It provides `darwinModules.<hostname>` for each host. Use `just local::check`, `just local::build`, or `just local::switch` when you need the local private path instead of the locked remote input. Never commit secrets or machine-private values.
+Sensitive values live in a separate private flake: `nix-config-private`. It provides `darwinModules.<hostname>` for each Darwin host. Use `just local::check`, `just local::build`, or `just local::switch` when you need the local private path instead of the locked remote input. Never commit secrets or machine-private values.
 
 ### Nix config: accept-flake-config
 `modules/darwin/defaults.nix` sets `nix.settings.accept-flake-config = true`, which auto-accepts `nixConfig` from flakes (e.g. `extra-substituters`). This is what allows `flake.nix`'s `nixConfig.extra-substituters` to take effect without manual confirmation.
