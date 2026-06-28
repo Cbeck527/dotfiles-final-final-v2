@@ -55,6 +55,8 @@ in
     '';
   };
 
+  programs.bash.enable = true;
+
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
@@ -84,7 +86,7 @@ in
 
   programs.eza = {
     enable = true;
-    enableFishIntegration = false;
+    enableFishIntegration = true;
     theme = {
       punctuation = {
         foreground = "Default";
