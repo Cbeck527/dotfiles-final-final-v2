@@ -25,8 +25,19 @@ LLM_CHANNELS := "llm-agents-nix"
 switch:
     sudo darwin-rebuild switch {{ impure }} --verbose --flake ".#{{ hostname }}" --fallback
 
+[linux]
+[group('build')]
+switch:
+    nix build ".#homeConfigurations.{{ hostname }}.activationPackage"
+    ./result/activate
+
 # Validate flake without applying
 [macos]
+[group('build')]
+check:
+    nix flake check
+
+[linux]
 [group('build')]
 check:
     nix flake check
@@ -37,10 +48,10 @@ check:
 build:
     nix build ".#darwinConfigurations.{{ hostname }}.system"
 
-# TODO: linux support
-# [linux]
-# switch:
-#     nix build .#homeConfigurations.linux.activationPackage
+[linux]
+[group('build')]
+build:
+    nix build ".#homeConfigurations.{{ hostname }}.activationPackage"
 
 # Format all nix files
 [macos]

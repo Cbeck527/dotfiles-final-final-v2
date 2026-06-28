@@ -25,9 +25,7 @@
     enable = true;
     defaultCacheTtl = 600;
     maxCacheTtl = 7200;
-    # TODO support pinentry on linux
-    # pinentry.package = if pkgs.stdenv.isDarwin then pkgs.pinentry_mac else pkgs.pinentry-curses;
-    pinentry.package = pkgs.pinentry_mac;
+    pinentry.package = if pkgs.stdenv.isDarwin then pkgs.pinentry_mac else pkgs.pinentry-curses;
     enableSshSupport = false;
   };
 }

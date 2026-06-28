@@ -4,3 +4,7 @@
 
 Pure nix version of [my dotfiles](https://github.com/Cbeck527/dotfiles) because
 I am trying to be good at computers.
+
+## Docs
+
+- [Debian bootstrap](etc/doc/debian-bootstrap.md)

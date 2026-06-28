@@ -222,10 +222,22 @@
         };
       };
 
+      # Linux Home Manager configurations
+      homeConfigurations = {
+        sweetums = home-manager.lib.homeManagerConfiguration {
+          pkgs = import inputs.nixpkgs {
+            system = "x86_64-linux";
+          };
+          extraSpecialArgs = { inherit inputs; };
+          modules = [
+            ./machines/sweetums/default.nix
+          ];
+        };
+      };
+
       # Format: `nix fmt` or `make fmt`
       formatter.aarch64-darwin = inputs.nixpkgs.legacyPackages.aarch64-darwin.nixfmt;
-
-      # TODO: set up linux machines with home-manager
+      formatter.x86_64-linux = inputs.nixpkgs.legacyPackages.x86_64-linux.nixfmt;
 
     };
 }
