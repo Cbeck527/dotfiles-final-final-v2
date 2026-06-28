@@ -54,7 +54,6 @@ build:
     nix build ".#homeConfigurations.{{ hostname }}.activationPackage"
 
 # Format all nix files
-[macos]
 [group('maintain')]
 fmt:
     find . -type f -name '*.nix' | xargs nix fmt
