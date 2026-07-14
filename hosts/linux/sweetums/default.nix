@@ -1,10 +1,12 @@
 {
   pkgs,
   config,
+  inputs,
   ...
 }:
 {
   imports = [
+    inputs.try.homeModules.default
     ../../../modules/shared/machine.nix
     ../../../modules/shared/identity.nix
     ../../../modules/linux/nix.nix
@@ -31,6 +33,22 @@
   custom.git.extras.enable = false;
 
   programs.home-manager.enable = true;
+
+  programs.try = {
+    enable = true;
+    package =
+      (inputs.try.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
+        ruby = pkgs.ruby;
+      }).overrideAttrs
+        (oldAttrs: {
+          postPatch = (oldAttrs.postPatch or "") + ''
+            substituteInPlace try.rb \
+              --replace-fail "/usr/bin/env ruby" "${pkgs.ruby}/bin/ruby"
+          '';
+        });
+    path = "~/src/scratch";
+  };
+
   programs.bash.enable = true;
 
   programs.direnv = {
