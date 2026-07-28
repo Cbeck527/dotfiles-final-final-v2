@@ -113,9 +113,7 @@
 
   homebrew = {
     caskArgs.appdir = "~/Applications";
-    casks = [
-      "yaak"
-    ];
+    casks = [ ];
   };
 
   # TODO: handle mac app store apps?

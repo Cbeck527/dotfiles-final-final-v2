@@ -50,7 +50,6 @@
     "transmission"
     "xcodes-app"
     "xld"
-    "yaak"
     "slack"
     "wireshark-app"
   ];

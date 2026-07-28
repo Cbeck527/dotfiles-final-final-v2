@@ -26,6 +26,7 @@ let
     # Development
     "sublime-text"
     "sublime-merge"
+    "yaak"
 
     # QuickLook plugins
     "qlmarkdown"
@@ -36,12 +37,11 @@ let
     # Utilities
     "bartender"
     "choosy"
-    "appcleaner"
     "apparency"
     "keka"
+    "mole-app"
     "1password"
     "1password-cli"
-    "latest"
 
   ];
 in
