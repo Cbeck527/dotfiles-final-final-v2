@@ -31,6 +31,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Terminal session persistence. Pinned to the latest revision with a matching zig2nix lock.
+    zmx.url = "github:neurosnap/zmx/217df96ae31ca914423a524cfce61bf1e3bab62d";
+
     # homebrew
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     homebrew-core = {

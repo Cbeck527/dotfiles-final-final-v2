@@ -26,6 +26,7 @@
 
     packages = with pkgs; [
       just
+      inputs.zmx.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
   };
 
