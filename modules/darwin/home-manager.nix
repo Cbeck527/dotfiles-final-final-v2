@@ -91,6 +91,7 @@ in
         settings = {
           dialect = "us";
           style = "compact";
+          search_mode = "daemon-fuzzy";
           filter_mode = "host";
           enter_accept = false;
           # Disabled: commands containing tokens are synced to the atuin server.
@@ -100,6 +101,8 @@ in
           update_check = false;
           show_preview = false;
           show_tabs = false;
+          show_numeric_shortcuts = false;
+          command_chaining = true;
         };
       };
 
