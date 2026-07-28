@@ -7,6 +7,9 @@
 }:
 let
   inherit (config.machine) username home;
+  atuinPackage = inputs.atuin.packages.${pkgs.stdenv.hostPlatform.system}.atuin;
+  atuinVersion =
+    (builtins.fromTOML (builtins.readFile "${inputs.atuin}/Cargo.toml")).workspace.package.version;
 in
 {
   # Common user configuration shared across all machines
@@ -81,6 +84,10 @@ in
 
       programs.atuin = {
         enable = true;
+        # The upstream flake package omits version metadata required by Home Manager's daemon module.
+        package = atuinPackage // {
+          version = atuinVersion;
+        };
         enableFishIntegration = true;
         flags = [
           "--disable-up-arrow"
