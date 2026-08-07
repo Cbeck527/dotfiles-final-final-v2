@@ -30,11 +30,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    atuin = {
-      url = "github:atuinsh/atuin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Experiment workspace manager
     try = {
       url = "github:tobi/try";
