@@ -70,6 +70,13 @@
     # LLM tooling
     llm-agents-nix.url = "github:numtide/llm-agents.nix";
 
+    # https://github.com/Cbeck527/my-prompt
+    my-prompt = {
+      url = "git+ssh://git@github.com/cbeck527/my-prompt.git";
+      inputs.home-manager.follows = "home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # private config with sensitive information
     nix-config-private = {
       url = "git+ssh://git@github.com/cbeck527/nix-config-private.git";

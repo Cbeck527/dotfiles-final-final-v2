@@ -30,6 +30,7 @@ in
         ../programs/fish.nix
         ../programs/gpg.nix
         ../programs/git.nix
+        ../programs/my-prompt.nix
         ../programs/tmux.nix
       ];
 

@@ -13,6 +13,7 @@
     ../../../modules/programs/fish.nix
     ../../../modules/programs/gpg.nix
     ../../../modules/programs/git.nix
+    ../../../modules/programs/my-prompt.nix
     ../../../modules/programs/tmux.nix
   ];
 
@@ -26,6 +27,7 @@
 
     packages = with pkgs; [
       just
+      statix
       inputs.zmx.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
   };

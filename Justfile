@@ -16,7 +16,7 @@ mod local
 NIX_CHANNELS := "nixpkgs treefmt-nix"
 HOME_CHANNELS := "home-manager"
 OSX_CHANNELS := "nix-darwin nix-homebrew homebrew-core homebrew-cask"
-EXTRA_CHANNELS := "fenix nix-config-private"
+EXTRA_CHANNELS := "fenix my-prompt nix-config-private"
 LLM_CHANNELS := "llm-agents-nix"
 
 # Apply config for current hostname
