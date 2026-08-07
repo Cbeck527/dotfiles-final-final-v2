@@ -311,16 +311,9 @@ in
 
       };
 
-      programs.obsidian = {
-        enable = true;
-        cli.enable = true;
-      };
-
       home.packages =
         with pkgs;
         [
-          obsidian
-
           # Shell & Terminal
           aspell
           btop
