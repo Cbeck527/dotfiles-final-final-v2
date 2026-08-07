@@ -61,12 +61,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Charm tools (crush, glow, etc.)
-    charmbracelet = {
-      url = "github:charmbracelet/nur";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # LLM tooling
     llm-agents-nix.url = "github:numtide/llm-agents.nix";
 

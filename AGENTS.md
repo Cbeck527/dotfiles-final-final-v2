@@ -26,7 +26,6 @@ All hosts are declared in `flake.nix`. Darwin hosts build `aarch64-darwin` syste
 - `modules/linux/nix.nix`: Linux Home Manager Nix client settings
 - `modules/programs/git.nix`, `modules/programs/gpg.nix`, `modules/programs/tmux.nix`, `modules/programs/fish.nix`: reusable Home Manager program modules
 - `modules/programs/llms/default.nix`, `modules/programs/llms/pi.nix`, `modules/programs/llms/omp.nix`: shared LLM CLI package setup
-- `modules/programs/llms/crush.nix`: Crush (Charmbracelet) Home Manager module via NUR, imported only on `beckbook-pro`
 - `scripts/audit-flake-inputs.sh`: flake input audit helper
 - `etc/patches/tea-custom-headers.patch`: patch used by the custom `tea` overlay
 - `etc/doc/`: documentation assets
