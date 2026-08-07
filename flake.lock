@@ -483,6 +483,7 @@
         "nix-homebrew": "nix-homebrew",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-terraform-157": "nixpkgs-terraform-157",
+        "treefmt-nix": "treefmt-nix_3",
         "try": "try",
         "zmx": "zmx"
       }
@@ -585,6 +586,26 @@
         "owner": "numtide",
         "repo": "treefmt-nix",
         "rev": "df3c0640565d04a0261253cdd89fce78ec50168a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_3": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785360170,
+        "narHash": "sha256-XE1lKgQ3eIO3E7zWryqcRsax+mYXod/5RHBn4YaR9YE=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "d1187f8bc71fb8aab02395869ec3f5c1920f75c0",
         "type": "github"
       },
       "original": {

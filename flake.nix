@@ -25,6 +25,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     atuin = {
       url = "github:atuinsh/atuin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -81,6 +86,20 @@
       nix-config-private,
       ...
     }@inputs:
+    let
+      supportedSystems = [
+        "aarch64-darwin"
+        "x86_64-linux"
+      ];
+      forAllSystems = inputs.nixpkgs.lib.genAttrs supportedSystems;
+      treefmtEval = forAllSystems (
+        system:
+        inputs.treefmt-nix.lib.evalModule inputs.nixpkgs.legacyPackages.${system} {
+          projectRootFile = "flake.nix";
+          programs.nixfmt.enable = true;
+        }
+      );
+    in
     {
       overlays = {
         terraform-157 = _: prev: {
@@ -249,9 +268,10 @@
         };
       };
 
-      # Format: `nix fmt` or `make fmt`
-      formatter.aarch64-darwin = inputs.nixpkgs.legacyPackages.aarch64-darwin.nixfmt;
-      formatter.x86_64-linux = inputs.nixpkgs.legacyPackages.x86_64-linux.nixfmt;
+      formatter = forAllSystems (system: treefmtEval.${system}.config.build.wrapper);
 
+      checks = forAllSystems (system: {
+        formatting = treefmtEval.${system}.config.build.check self;
+      });
     };
 }

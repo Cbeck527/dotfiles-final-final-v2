@@ -13,7 +13,7 @@ impure := if IMPURE == "true" { "--impure" } else { "" }
 # Build and apply using local private config
 mod local
 
-NIX_CHANNELS := "nixpkgs"
+NIX_CHANNELS := "nixpkgs treefmt-nix"
 HOME_CHANNELS := "home-manager"
 OSX_CHANNELS := "nix-darwin nix-homebrew homebrew-core homebrew-cask"
 EXTRA_CHANNELS := "fenix nix-config-private"
@@ -53,10 +53,10 @@ build:
 build:
     nix build ".#homeConfigurations.{{ hostname }}.activationPackage"
 
-# Format all nix files
+# Format the repository with treefmt
 [group('maintain')]
 fmt:
-    find . -type f -name '*.nix' | xargs nix fmt
+    nix fmt
 
 # Garbage collect nix store
 [group('maintain')]

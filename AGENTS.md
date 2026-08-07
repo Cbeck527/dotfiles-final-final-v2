@@ -97,8 +97,8 @@ The main inputs currently include:
 ### Nix implementation: Lix
 This config uses **Lix** instead of standard Nix: `nix.package = pkgs.lix` in `modules/darwin/defaults.nix`. Don't assume CppNix-specific behavior.
 
-### Formatter: nixfmt
-`nix fmt` uses `nixfmt` (not nixpkgs-fmt, alejandra, or nixfmt-rfc-style). `flake.nix` declares nixfmt formatters for both `aarch64-darwin` and `x86_64-linux`.
+### Formatter: treefmt-nix
+`nix fmt` uses a `treefmt-nix` wrapper with `nixfmt` enabled. `flake.nix` declares the wrapper and its formatting check for both `aarch64-darwin` and `x86_64-linux`; `just fmt` runs the wrapper once for the repository.
 
 ### Relaxed sandbox for Emacs
 Nix sandbox is set to `"relaxed"` (not the default `"true"`) because `modules/darwin/emacs-macport.nix` sets `__noChroot = true` on the Emacs derivation. Byte-compiling `url.el` triggers GnuTLS cert scanning of `/etc/ssl/certs`, which strict sandboxing blocks. If you change the Emacs derivation, this relationship must be maintained.

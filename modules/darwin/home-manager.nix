@@ -364,9 +364,9 @@ in
           just
           lua-language-server
           tea
-          nixfmt
           nodejs
           pnpm
+          statix
           stylua
           vim
 
