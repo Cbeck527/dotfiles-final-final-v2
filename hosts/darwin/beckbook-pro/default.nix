@@ -35,6 +35,9 @@
       qmd
       readwise-cli
       ffmpeg
+
+      # testing
+      devenv
     ];
   };
 
