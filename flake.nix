@@ -2,9 +2,13 @@
   description = "Chris Becker's nix configuration for his hosts!";
 
   nixConfig = {
-    extra-substituters = [ "https://cache.numtide.com" ];
+    extra-substituters = [
+      "https://cache.numtide.com"
+      "https://chrisbecker.cachix.org"
+    ];
     extra-trusted-public-keys = [
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+      "chrisbecker.cachix.org-1:YEOaeUbad1jfCQdMUfIHB1v0Vgu2oKO50VX1bAple3s="
     ];
   };
 
@@ -61,8 +65,7 @@
 
     # https://github.com/Cbeck527/my-prompt
     my-prompt = {
-      url = "git+ssh://git@github.com/cbeck527/my-prompt.git";
-      inputs.home-manager.follows = "home-manager";
+      url = "github:cbeck527/my-prompt";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

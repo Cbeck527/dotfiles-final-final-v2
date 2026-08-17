@@ -82,6 +82,10 @@
       diffutils
       gnused
       gnutls
+
+      # global nix utilities
+      cachix
+      devenv
     ];
   };
 
