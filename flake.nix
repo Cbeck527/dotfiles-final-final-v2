@@ -44,6 +44,12 @@
 
     zmx.url = "github:neurosnap/zmx";
 
+    # $HOME file management, used only by the `coder` host
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # homebrew
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     homebrew-core = {
@@ -101,6 +107,10 @@
           programs.nixfmt.enable = true;
         }
       );
+      mkHjemConfiguration = import ./lib/hjem.nix {
+        inherit (inputs.nixpkgs) lib;
+        inherit (inputs) hjem;
+      };
     in
     {
       overlays = {
@@ -266,6 +276,36 @@
           extraSpecialArgs = { inherit inputs; };
           modules = [
             ./hosts/linux/sweetums/default.nix
+          ];
+        };
+
+        # Shared config for every Coder workspace; workspace hostnames vary, so
+        # the Justfile selects this config when $CODER is set.
+        coder = home-manager.lib.homeManagerConfiguration {
+          pkgs = import inputs.nixpkgs {
+            system = "x86_64-linux";
+            overlays = [ self.overlays.fenix ];
+          };
+          extraSpecialArgs = { inherit inputs; };
+          modules = [
+            ./hosts/linux/coder/default.nix
+          ];
+        };
+      };
+
+      # Hjem-managed dotfiles. Coder workspaces only, applied out of band from
+      # Home Manager with `just hjem-switch`. The output name is the Hjem CLI's
+      # convention: `hjem standalone switch --flake` reads
+      # `hjemConfigurations."$USER"`. See lib/hjem.nix for why the just recipes
+      # build `manifestFile` and pass it to `--manifest` instead.
+      hjemConfigurations = {
+        christopher-becker = mkHjemConfiguration {
+          pkgs = import inputs.nixpkgs {
+            system = "x86_64-linux";
+          };
+          inherit (self.homeConfigurations.coder.config.machine) username home;
+          modules = [
+            ./hosts/linux/coder/hjem.nix
           ];
         };
       };
