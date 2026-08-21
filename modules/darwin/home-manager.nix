@@ -41,6 +41,11 @@ in
 
       programs.home-manager.enable = true;
 
+      programs.nh = {
+        enable = true;
+        darwinFlake = "${home}/.config/nix-config/";
+      };
+
       programs.try = {
         enable = true;
         package =
