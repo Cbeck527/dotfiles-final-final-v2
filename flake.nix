@@ -3,12 +3,14 @@
 
   nixConfig = {
     extra-substituters = [
+      "https://nix-community.cachix.org"
       "https://cache.numtide.com"
-      "https://chrisbecker.cachix.org"
+      "https://nix.cmb.software/machines"
     ];
     extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
-      "chrisbecker.cachix.org-1:YEOaeUbad1jfCQdMUfIHB1v0Vgu2oKO50VX1bAple3s="
+      "machines:eauOgUdO2pwUeNnOb0m4RrWzi6wKFTnYm18PKoPbwYw="
     ];
   };
 
@@ -67,6 +69,8 @@
       url = "github:cbeck527/my-prompt";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    attic.url = "github:zhaofengli/attic";
 
     # private config with sensitive information
     nix-config-private = {
