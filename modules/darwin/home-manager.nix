@@ -325,6 +325,10 @@ in
       home.packages =
         with pkgs;
         [
+          # global nix utilities
+          cachix
+          devenv
+
           # Shell & Terminal
           aspell
           btop
