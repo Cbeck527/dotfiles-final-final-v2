@@ -8,7 +8,7 @@
 {
   options.custom.git.githubCredentialHelper.enable = lib.mkOption {
     type = lib.types.bool;
-    default = pkgs.stdenv.isDarwin;
+    default = pkgs.stdenv.hostPlatform.isDarwin;
     description = "Use GitHub CLI as the Git credential helper for GitHub remotes.";
   };
 
@@ -98,7 +98,7 @@
           user = config.identity.githubUser;
         };
       }
-      // lib.optionalAttrs pkgs.stdenv.isDarwin {
+      // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
         credential = {
           helper = "osxkeychain";
         };
@@ -142,7 +142,7 @@
         ".envrc"
         ".direnv/"
       ]
-      ++ lib.optionals pkgs.stdenv.isDarwin [
+      ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
         # macOS
         ".DS_Store"
         ".AppleDouble"

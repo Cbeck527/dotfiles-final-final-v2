@@ -114,7 +114,7 @@ in
 
       programs.ghostty = {
         enable = true;
-        package = if pkgs.stdenv.isDarwin then null else pkgs.ghostty;
+        package = if pkgs.stdenv.hostPlatform.isDarwin then null else pkgs.ghostty;
         settings = {
           font-size = 17;
           font-family = "TX-02";
@@ -412,7 +412,7 @@ in
           typst
           zstd
         ]
-        ++ (lib.optionals pkgs.stdenv.isDarwin [
+        ++ (lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
           minijinja
           pinentry_mac
           (python3.withPackages (ps: [ ps.pip ]))
