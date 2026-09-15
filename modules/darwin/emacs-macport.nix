@@ -18,6 +18,18 @@ let
       withWebP = true;
     }).overrideAttrs
       (old: {
+        version = "31.1.50-unstable-2026-09-02";
+        src = pkgs.fetchFromGitHub {
+          owner = "jdtsmith";
+          repo = "emacs-mac";
+          # Pin emacs-mac-31 so builds stay reproducible as the branch advances.
+          rev = "617ada906640ac5694cbec9f5fccf2246b17e21d";
+          hash = "sha256-aZaONqeyLzQk38NlLeKwnQtGup89RbBiZy01+13xvBo=";
+        };
+
+        # Use Emacs 31's Nix integration patches without Emacs 30 backports.
+        patches = (pkgs.emacs31.override { withNativeCompilation = true; }).patches;
+
         # Opt out of sandbox: byte-compiling url.el triggers GnuTLS cert
         # scanning of /etc/ssl/certs. Requires sandbox = "relaxed" in nix settings.
         __noChroot = true;
