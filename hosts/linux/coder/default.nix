@@ -37,6 +37,7 @@
       fd
       gh
       go-grip
+      herdr
       just
       # Required by the Hjem-managed dotfiles/fish/conf.d/zoxide.fish, which
       # runs `zoxide init --cmd j` itself. programs.zoxide is deliberately not
