@@ -67,6 +67,19 @@
   # sessions; `just login-shell-bash` sets the passwd entry to match.
   custom.bash.fishHandoff.enable = true;
 
+  programs.attic-client = {
+    enable = true;
+    package = inputs.attic.packages.${pkgs.stdenv.hostPlatform.system}.attic-client;
+    # TODO set up sops/age for secrets
+    # settings = {
+    #   default-server = "cmb-software";
+    #   servers.cmb-software = {
+    #     endpoint = "https://nix.cmb.software";
+    #     token-file = "";
+    #   };
+    # };
+  };
+
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
