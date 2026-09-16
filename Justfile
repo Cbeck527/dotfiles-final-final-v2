@@ -37,7 +37,10 @@ switch:
 [group('build')]
 switch:
     nix build ".#homeConfigurations.{{ target }}.activationPackage"
-    ./result/activate
+    # Standalone Home Manager has no `backupFileExtension` option (that lives on
+    # the NixOS/nix-darwin wrapper modules), so pass it through the env vars the
+    # activation script reads directly.
+    HOME_MANAGER_BACKUP_EXT=hm-backup HOME_MANAGER_BACKUP_OVERWRITE=1 ./result/activate
     {{ hjem_hook }}
 
 # Link Hjem-managed dotfiles into $HOME (Coder only)
