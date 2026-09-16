@@ -8,3 +8,5 @@ I am trying to be good at computers.
 ## Docs
 
 - [Debian bootstrap](etc/doc/debian-bootstrap.md)
+- Coder workspaces: `just coder-bootstrap` installs Lix and clones this repo to
+  `~/.config/nix-config` (needs `just`, `git`, and `curl` on the image first).

@@ -56,7 +56,7 @@ hjem-build: _require-coder
 
 [private]
 _require-coder:
-    @test "{{ target }}" = "coder" || { echo "hjem is only configured for Coder workspaces (\$CODER is unset)" >&2; exit 1; }
+    @test "{{ target }}" = "coder" || { echo "this recipe only runs on Coder workspaces (\$CODER is unset)" >&2; exit 1; }
 
 # Validate flake without applying
 [macos]
@@ -107,6 +107,48 @@ login-shell-bash:
     fi
     echo "login shell: $current -> $target"
     sudo chsh -s "$target" "$user"
+
+# Install Lix with flakes and clone this repo to ~/.config/nix-config (Coder only)
+[linux]
+[group('maintain')]
+coder-bootstrap: _require-coder
+    #!/usr/bin/env bash
+    # First-run setup for a fresh workspace; each step is skipped if already done.
+    set -euo pipefail
+    checkout="$HOME/.config/nix-config"
+    repo_https=https://github.com/Cbeck527/dotfiles-final-final-v2.git
+    repo_ssh=git@github.com:Cbeck527/dotfiles-final-final-v2.git
+
+    if [[ -e /nix/receipt.json ]] || command -v nix > /dev/null; then
+      echo "lix: already installed, skipping"
+    else
+      echo "lix: installing from install.lix.systems"
+      # Flakes default to on, but the `--enable-flakes` flag is a toggle that turns
+      # them OFF (checked with `nix-installer plan`); the env var sets it explicitly.
+      curl -sSf -L https://install.lix.systems/lix | NIX_INSTALLER_ENABLE_FLAKES=true sh -s -- install \
+        --no-confirm \
+        --extra-conf "trusted-users = root $(id -un)" \
+        --extra-conf "accept-flake-config = true" \
+        --extra-conf "warn-dirty = false"
+    fi
+
+    if [[ -d "$checkout/.git" ]]; then
+      echo "checkout: $checkout already exists, skipping clone"
+    elif [[ -e "$checkout" ]]; then
+      echo "checkout: $checkout exists but is not a git repo" >&2
+      exit 1
+    else
+      echo "checkout: cloning into $checkout"
+      mkdir -p "$(dirname "$checkout")"
+      git clone "$repo_https" "$checkout"
+      git -C "$checkout" remote set-url --push origin "$repo_ssh"
+    fi
+
+    echo
+    echo "next steps:"
+    echo "  . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh  # or open a new shell"
+    echo "  cd $checkout && just switch"
+    echo "  just login-shell-bash"
 
 # Garbage collect nix store
 [group('maintain')]

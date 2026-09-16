@@ -11,6 +11,12 @@ These notes assume:
 - the primary user is `chris`
 - the checkout lives at `~/.config/nix-config`
 
+On Coder workspaces, `just coder-bootstrap` covers sections 1 and 2: it installs Lix
+with flakes enabled plus `trusted-users`, `accept-flake-config`, and `warn-dirty`,
+then clones this repo to `~/.config/nix-config`. Skip ahead to section 3 there. If a
+workspace image ever lacks systemd, run the installer by hand with
+`install linux --init none` instead.
+
 ## 1. Load Nix In The Current Shell
 
 After a fresh Lix install, log out and back in before continuing. The installer
