@@ -42,8 +42,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zmx.url = "github:neurosnap/zmx";
-
     # $HOME file management, used only by the `coder` host
     hjem = {
       url = "github:feel-co/hjem";

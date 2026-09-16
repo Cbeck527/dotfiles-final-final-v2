@@ -340,7 +340,7 @@ in
           tree
           watch
           zoxide
-          inputs.zmx.packages.${pkgs.stdenv.hostPlatform.system}.default
+          zmx
 
           # Core Utilities
           curl

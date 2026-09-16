@@ -53,7 +53,7 @@
 
       # Dotfile management; see hjem.nix in this directory
       inputs.hjem.packages.${pkgs.stdenv.hostPlatform.system}.hjem
-      inputs.zmx.packages.${pkgs.stdenv.hostPlatform.system}.default
+      zmx
     ];
   };
 

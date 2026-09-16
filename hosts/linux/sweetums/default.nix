@@ -28,7 +28,7 @@
     packages = with pkgs; [
       just
       statix
-      inputs.zmx.packages.${pkgs.stdenv.hostPlatform.system}.default
+      zmx
     ];
   };
 
