@@ -38,12 +38,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Experiment workspace manager
-    try = {
-      url = "github:tobi/try";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # $HOME file management, used only by the `coder` host
     hjem = {
       url = "github:feel-co/hjem";

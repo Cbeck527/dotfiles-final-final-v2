@@ -22,7 +22,6 @@ in
     extraSpecialArgs = { inherit inputs; };
     users.${username} = {
       imports = [
-        inputs.try.homeModules.default
         ../shared/identity.nix
         ../programs/fish.nix
         ../programs/gpg.nix
@@ -57,21 +56,6 @@ in
         #     token-file = "";
         #   };
         # };
-      };
-
-      programs.try = {
-        enable = true;
-        package =
-          (inputs.try.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
-            ruby = pkgs.ruby;
-          }).overrideAttrs
-            (oldAttrs: {
-              postPatch = (oldAttrs.postPatch or "") + ''
-                substituteInPlace try.rb \
-                  --replace-fail "/usr/bin/env ruby" "${pkgs.ruby}/bin/ruby"
-              '';
-            });
-        path = "~/src/scratch";
       };
 
       programs.fish.interactiveShellInit = ''

@@ -17,7 +17,6 @@ in
     extraSpecialArgs = { inherit inputs; };
     users.${username} = {
       imports = [
-        inputs.try.homeModules.default
         ../shared/identity.nix
         ../programs/fish.nix
         ../programs/gpg.nix
@@ -29,21 +28,6 @@ in
       home.stateVersion = "26.05";
 
       programs.home-manager.enable = true;
-
-      programs.try = {
-        enable = true;
-        package =
-          (inputs.try.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
-            ruby = pkgs.ruby;
-          }).overrideAttrs
-            (oldAttrs: {
-              postPatch = (oldAttrs.postPatch or "") + ''
-                substituteInPlace try.rb \
-                  --replace-fail "/usr/bin/env ruby" "${pkgs.ruby}/bin/ruby"
-              '';
-            });
-        path = "~/src/scratch";
-      };
 
       programs.direnv = {
         enable = true;
