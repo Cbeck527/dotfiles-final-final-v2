@@ -6,11 +6,13 @@
       "https://nix-community.cachix.org"
       "https://cache.numtide.com"
       "https://nix.cmb.software/machines"
+      "https://my-prompt.cachix.org"
     ];
     extra-trusted-public-keys = [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
       "machines:eauOgUdO2pwUeNnOb0m4RrWzi6wKFTnYm18PKoPbwYw="
+      "my-prompt.cachix.org-1:aIzUDavhE5lzcsn6awg73yVAUnjMrAeqPATi3XrIZ0Q="
     ];
   };
 
@@ -69,10 +71,11 @@
     llm-agents-nix.url = "github:numtide/llm-agents.nix";
 
     # https://github.com/Cbeck527/my-prompt
-    my-prompt = {
-      url = "github:cbeck527/my-prompt";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # Deliberately does not follow our nixpkgs: the package must be built from
+    # my-prompt's own locked nixpkgs to match what its CI pushes to
+    # my-prompt.cachix.org. Following ours changes the derivation and every
+    # host compiles it from source.
+    my-prompt.url = "github:cbeck527/my-prompt";
 
     attic.url = "github:zhaofengli/attic";
 

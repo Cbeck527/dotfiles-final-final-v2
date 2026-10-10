@@ -33,6 +33,13 @@ in
   # The primary user has no password, so sudo can't prompt for one
   security.sudo.wheelNeedsPassword = false;
 
+  # Builds on this host don't see the flake's nixConfig, so caches for inputs
+  # built here have to be configured system-wide
+  nix.settings = {
+    substituters = [ "https://my-prompt.cachix.org" ];
+    trusted-public-keys = [ "my-prompt.cachix.org-1:aIzUDavhE5lzcsn6awg73yVAUnjMrAeqPATi3XrIZ0Q=" ];
+  };
+
   home-manager.users.${config.machine.username} = {
     home.packages = with pkgs; [
       statix
