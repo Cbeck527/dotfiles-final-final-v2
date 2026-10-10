@@ -65,18 +65,12 @@
     llm-agents-nix.url = "github:numtide/llm-agents.nix";
 
     # https://github.com/Cbeck527/my-prompt
-    # Deliberately does not follow our nixpkgs: the package must be built from
-    # my-prompt's own locked nixpkgs to match what its CI pushes to
-    # my-prompt.cachix.org. Following ours changes the derivation and every
-    # host compiles it from source.
     my-prompt.url = "github:cbeck527/my-prompt";
 
     attic.url = "github:zhaofengli/attic";
 
     # private config with sensitive information
-    nix-config-private = {
-      url = "git+ssh://git@github.com/cbeck527/nix-config-private.git";
-    };
+    nix-config-private.url = "git+ssh://git@github.com/cbeck527/nix-config-private.git";
   };
 
   outputs =
