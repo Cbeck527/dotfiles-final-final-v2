@@ -420,6 +420,7 @@ in
           yaml-language-server
 
           # Network Tools
+          doggo
           netcat
           nmap
           socat

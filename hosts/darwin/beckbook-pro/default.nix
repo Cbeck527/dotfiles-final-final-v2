@@ -10,7 +10,9 @@
     ../../../modules/darwin/homebrew.nix
     ../../../modules/darwin/services.nix
     ../../../modules/darwin/home-manager.nix
-    ../../../modules/darwin/emacs-macport.nix
+    # NOTE: temporarily commented out in favor of manual build fom
+    # https://github.com/jimeh/build-emacs-for-macos/
+    # ../../../modules/darwin/emacs-macport.nix
   ];
 
   machine.username = "chris";
