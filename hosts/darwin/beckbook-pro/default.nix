@@ -34,8 +34,6 @@
     home.packages = with pkgs; [
       cowsay
       fortune
-      qmd
-      readwise-cli
       ffmpeg
     ];
   };

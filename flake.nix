@@ -121,23 +121,8 @@
               codex
               omp
               pi
-              qmd
               ;
           };
-
-        readwise-cli = _: prev: {
-          readwise-cli = prev.buildNpmPackage {
-            pname = "readwise-cli";
-            version = "0.5.3";
-            src = prev.fetchFromGitHub {
-              owner = "readwiseio";
-              repo = "readwise-cli";
-              rev = "e7b4f77ea00184222cd68a7eea07e6457780213e";
-              hash = "sha256-dkyRRQHtdsprIVJvouqH4WKzXDq5AKRgfLNWxem7t3s=";
-            };
-            npmDepsHash = "sha256-U8YriPY/x9t9cZ3a4caq4oZRe396X3r0RKVJhTTRiNI=";
-          };
-        };
 
         # Custom tea build pinned to bfbec3f with CF Access custom headers patch
         tea = _: prev: {
@@ -221,7 +206,6 @@
                 self.overlays.fenix
                 self.overlays.terraform-157
                 self.overlays.llm-agents
-                self.overlays.readwise-cli
                 self.overlays.tea
                 self.overlays.datadog-pup
               ];
@@ -243,7 +227,6 @@
                 self.overlays.fenix
                 self.overlays.terraform-157
                 self.overlays.llm-agents
-                self.overlays.readwise-cli
                 self.overlays.tea
                 self.overlays.datadog-pup
               ];
