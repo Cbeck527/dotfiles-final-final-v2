@@ -14,6 +14,10 @@ target := if env('CODER', '') == "true" { "coder" } else { hostname }
 
 impure := if IMPURE == "true" { "--impure" } else { "" }
 
+# NixOS hosts are whole systems; other Linux hosts are standalone Home Manager
+is_nixos := path_exists('/etc/NIXOS')
+linux_build_attr := if is_nixos == "true" { ".#nixosConfigurations." + target + ".config.system.build.toplevel" } else { ".#homeConfigurations." + target + ".activationPackage" }
+
 # Hjem manages dotfiles on Coder workspaces only, out of band from Home Manager
 hjem_manifest := '.#hjemConfigurations."' + `id -un` + '".manifestFile'
 hjem_hook := if target == "coder" { "just hjem-switch" } else { "true" }
@@ -36,12 +40,24 @@ switch:
 [linux]
 [group('build')]
 switch:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if {{ is_nixos }}; then
+      sudo nixos-rebuild switch --flake ".#{{ target }}" --fallback
+      exit 0
+    fi
     nix build ".#homeConfigurations.{{ target }}.activationPackage"
     # Standalone Home Manager has no `backupFileExtension` option (that lives on
     # the NixOS/nix-darwin wrapper modules), so pass it through the env vars the
     # activation script reads directly.
     HOME_MANAGER_BACKUP_EXT=hm-backup HOME_MANAGER_BACKUP_OVERWRITE=1 ./result/activate
     {{ hjem_hook }}
+
+# Deploy a NixOS host over SSH: evaluated here, built and activated on the target
+[group('build')]
+deploy host target_host:
+    nix run --inputs-from . nixpkgs#nixos-rebuild-ng -- switch --flake ".#{{ host }}" \
+      --target-host "{{ target_host }}" --build-host "{{ target_host }}" --fallback
 
 # Link Hjem-managed dotfiles into $HOME (Coder only)
 # The manifest is built first so every source exists before hjem links it.
@@ -81,7 +97,7 @@ build:
 [linux]
 [group('build')]
 build:
-    nix build ".#homeConfigurations.{{ target }}.activationPackage"
+    nix build "{{ linux_build_attr }}"
 
 # Format the repository with treefmt
 [group('maintain')]

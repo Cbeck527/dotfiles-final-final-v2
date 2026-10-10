@@ -5,14 +5,14 @@ This file is the canonical assistant-facing guide for this repository. It replac
 ## Overview
 This repository is a Nix flake built around `nix-darwin`, Home Manager, and `nix-homebrew`.
 
-Current flake outputs define two Darwin hosts and two pure Home Manager Linux hosts:
+Current flake outputs define two Darwin hosts, one NixOS host, and one pure Home Manager Linux host:
 
 - `beckbook-pro` (personal)
 - `mac-h99xrph3j9` (work)
-- `sweetums` (Linux)
+- `sweetums` (NixOS VPS)
 - `coder` (Linux, shared by all Coder workspaces)
 
-All hosts are declared in `flake.nix`. Darwin hosts build `aarch64-darwin` systems, and `sweetums` and `coder` build `x86_64-linux` Home Manager activation packages.
+All hosts are declared in `flake.nix`. Darwin hosts build `aarch64-darwin` systems, `nixosConfigurations.sweetums` builds an `x86_64-linux` NixOS system, and `coder` builds an `x86_64-linux` Home Manager activation package.
 
 ## Repository Layout
 
@@ -20,6 +20,7 @@ All hosts are declared in `flake.nix`. Darwin hosts build `aarch64-darwin` syste
 - `Justfile`: primary operator workflow
 - `local.just`: local overrides loaded by `mod local`
 - `hosts/darwin/<hostname>/default.nix`: nix-darwin host-specific configuration entry points
+- `hosts/nixos/<hostname>/default.nix`: NixOS host-specific configuration entry points, next to that host's `hardware-configuration.nix`
 - `hosts/linux/<hostname>/default.nix`: pure Home Manager host-specific configuration entry points for non-NixOS Linux (`coder` is keyed by environment, not hostname)
 - `hosts/linux/coder/hjem.nix`: Hjem-managed dotfiles for Coder workspaces (a Hjem module, not a Home Manager module)
 - `hosts/linux/coder/dotfiles/`: raw dotfiles linked into `$HOME` by Hjem
@@ -27,21 +28,25 @@ All hosts are declared in `flake.nix`. Darwin hosts build `aarch64-darwin` syste
 - `modules/shared/machine.nix`: shared options for `machine.username` and `machine.home`
 - `modules/shared/identity.nix`: shared identity options consumed by Git and GPG modules
 - `modules/darwin/defaults.nix`, `modules/darwin/homebrew.nix`, `modules/darwin/services.nix`, `modules/darwin/home-manager.nix`, `modules/darwin/emacs-macport.nix`: Darwin-only modules
-- `modules/linux/nix.nix`: Linux Home Manager Nix client settings
+- `modules/nixos/defaults.nix`: shared NixOS system settings (Lix, flakes, trusted users, GC, `git`/`just`)
+- `modules/nixos/user.nix`: the primary NixOS user account, built from `config.machine.*` (wheel, fish login shell, no password)
+- `modules/nixos/home-manager.nix`: the NixOS Home Manager integration and the user's shared program modules
+- `modules/linux/nix.nix`: Linux Home Manager Nix client settings (standalone Home Manager only; NixOS hosts own `nix.conf` at the system level)
 - `modules/programs/git.nix`, `modules/programs/gpg.nix`, `modules/programs/tmux.nix`, `modules/programs/fish.nix`, `modules/programs/bash.nix`: reusable Home Manager program modules
 - `modules/programs/llms/default.nix`, `modules/programs/llms/pi.nix`, `modules/programs/llms/omp.nix`: shared LLM CLI package setup
 - `scripts/audit-flake-inputs.sh`: flake input audit helper
 - `etc/patches/tea-custom-headers.patch`: patch used by the custom `tea` overlay
 - `etc/doc/`: documentation assets
 
-Keep new config split by evaluation type and concern. Darwin system behavior belongs in `modules/darwin/*.nix`, non-NixOS Linux Home Manager support belongs in `modules/linux/*.nix`, reusable Home Manager program modules belong in `modules/programs/*.nix`, shared options belong in `modules/shared/*.nix`, and host-specific choices belong in `hosts/<eval-type>/<hostname>/default.nix`.
+Keep new config split by evaluation type and concern. Darwin system behavior belongs in `modules/darwin/*.nix`, NixOS system behavior belongs in `modules/nixos/*.nix`, non-NixOS Linux Home Manager support belongs in `modules/linux/*.nix`, reusable Home Manager program modules belong in `modules/programs/*.nix`, shared options belong in `modules/shared/*.nix`, and host-specific choices belong in `hosts/<eval-type>/<hostname>/default.nix`.
 
 ## Commands
 Use `just` from the repository root.
 
-- `just switch`: apply the current host configuration. On Darwin, this runs `darwin-rebuild` in switch mode; on Linux, it builds `.#homeConfigurations.<hostname>.activationPackage` and runs `./result/activate`.
+- `just switch`: apply the current host configuration. On Darwin, this runs `darwin-rebuild` in switch mode; on NixOS (detected by `/etc/NIXOS`), it runs `sudo nixos-rebuild switch`; on other Linux, it builds `.#homeConfigurations.<hostname>.activationPackage` and runs `./result/activate`.
+- `just deploy <host> <user@address>`: switch a NixOS host over SSH from another machine. Evaluation happens locally (so the private input resolves with local credentials); building and activation happen on the target.
 - `just check`: run `nix flake check`
-- `just build`: build the current host's Darwin system or Home Manager activation package
+- `just build`: build the current host's Darwin system, NixOS system, or Home Manager activation package
 - `just fmt`: format `*.nix` files with `nix fmt`
 - `just login-shell-bash`: point the `/etc/passwd` login shell at `/bin/bash` (Linux; see the Coder login shell gotcha). Refuses to run until the fish handoff is linked into `~/.bashrc`.
 - `just clean`: run `nix-collect-garbage`
@@ -97,8 +102,8 @@ The main inputs currently include:
 ### Host-specific patterns
 - `beckbook-pro`: sets `machine.username` and `machine.home` directly. Adds personal packages (qmd, readwise-cli, ffmpeg, terraform, SDR tools, etc.) and many additional casks.
 - `mac-h99xrph3j9`: bridges `machine.username` and `machine.home` from the private module's `_module.args`. Uses `nix.settings.trusted-users = lib.mkAfter [ username ]` to add the work user. Excludes the `contexts` cask via `custom.homebrew.excludeCasks`. Uses the `datadog-pup` overlay and custom k9s views for Kubernetes work.
-- `sweetums`: pure Home Manager Linux host under `hosts/linux/sweetums`.
-- `coder`: pure Home Manager Linux host under `hosts/linux/coder`, shared by every Coder workspace. Mirrors `sweetums` apart from `machine.username`/`machine.home` (`christopher-becker`), the Hjem CLI in `home.packages`, its dev/CLI tooling package set (including the fenix Rust toolchain, which is why its `pkgs` import applies `self.overlays.fenix`), and `custom.bash.fishHandoff.enable` (see the Coder login shell gotcha). Selected by hostname-independent `$CODER` detection in the `Justfile`. The only host using Hjem.
+- `sweetums` (NixOS): a KVM VPS booting via BIOS with GRUB on `/dev/vda`. `hardware-configuration.nix` was copied from the provider's install and should only change if the disk layout does. The host file holds the SSH public keys, shared by `root` and `chris`. `chris` has no password and gets passwordless sudo through `security.sudo.wheelNeedsPassword = false`. Home Manager runs as a NixOS module (`modules/nixos/home-manager.nix`), so `just switch` applies system and user config together; host-specific user settings live under `home-manager.users.<name>` in the host file. SSH hardening (disabling root login) is the planned next step. The same VPS ran Debian with a standalone `homeConfigurations.sweetums` until it was reinstalled with NixOS.
+- `coder`: pure Home Manager Linux host under `hosts/linux/coder`, shared by every Coder workspace. Mirrors the `sweetums` Home Manager user apart from `machine.username`/`machine.home` (`christopher-becker`), the Hjem CLI in `home.packages`, its dev/CLI tooling package set (including the fenix Rust toolchain, which is why its `pkgs` import applies `self.overlays.fenix`), and `custom.bash.fishHandoff.enable` (see the Coder login shell gotcha). Selected by hostname-independent `$CODER` detection in the `Justfile`. The only host using Hjem.
 
 ## Gotchas & Non-Obvious Patterns
 
@@ -148,6 +153,14 @@ Unrelated but adjacent: Coder modules that append to shell profiles fail on this
 - Keep Hjem and Home Manager paths disjoint. Hjem defaults to `clobberFiles = false` here, so it backs up rather than overwrites existing paths (`.backup-` prefix), but nothing prevents the two from fighting over the same file.
 - `nix flake check` warns `unknown flake output 'hjemConfigurations'`. That output name is the CLI's convention (`hjem standalone switch --flake` reads `hjemConfigurations."$USER"`), not a standard flake schema output. The warning is expected.
 - State lives in `~/.local/state/hjem/standalone`. `hjem standalone generations`, `hjem standalone rollback`, and `hjem standalone expire-generations --keep-last N` manage it; there are no just recipes for those.
+
+### NixOS hosts
+- **Lockout risk.** A bad `users`, `services.openssh`, or `networking` change can lock you out of a remote host. Use `nixos-rebuild dry-activate` (or `switch-to-configuration dry-activate` on a built system) to see which units will restart, and keep an existing SSH session open while confirming a switch from a second one. GRUB keeps previous generations for rollback, but on a VPS reaching GRUB means the provider's console.
+- **No channels.** `nix.channel.enable = false` in `modules/nixos/defaults.nix`; `NIX_PATH` resolves `nixpkgs` through the flake registry (`nixpkgs=flake:nixpkgs`), which `nixosSystem` pins to this flake's `nixpkgs` input.
+- **`nixpkgs-unstable`.** NixOS hosts build from the same `nixpkgs-unstable` input as everything else, not from a stable `nixos-YY.MM` branch.
+- **Fish is the login shell.** Unlike the `coder` host, nothing on a NixOS host runs plumbing through the login shell from `/etc/passwd`, so `modules/nixos/user.nix` sets fish directly and `custom.bash.fishHandoff` is not used.
+- **No password on the primary user.** `modules/nixos/user.nix` sets none, so each host must either set `security.sudo.wheelNeedsPassword = false` or give the user a `hashedPassword`; otherwise `sudo` is unusable.
+- **`stateVersion`.** `sweetums` was raised from the installer's `23.11` to `26.05` before it ran any stateful service (the two built byte-identical systems). Don't change it again without reading the release notes.
 
 ### Machine options: username/home
 `modules/shared/machine.nix` defines darwin/Home Manager options for `machine.username` and `machine.home`. `beckbook-pro`, `sweetums`, and `coder` set them directly; `mac-h99xrph3j9` bridges them from the private module's `_module.args`. All modules that need the username or home directory read `config.machine.username` or `config.machine.home`.

@@ -265,18 +265,21 @@
         };
       };
 
-      # Linux Home Manager configurations
-      homeConfigurations = {
-        sweetums = home-manager.lib.homeManagerConfiguration {
-          pkgs = import inputs.nixpkgs {
-            system = "x86_64-linux";
-          };
-          extraSpecialArgs = { inherit inputs; };
+      # NixOS configurations
+      nixosConfigurations = {
+        # VPS
+        sweetums = inputs.nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
           modules = [
-            ./hosts/linux/sweetums/default.nix
+            home-manager.nixosModules.home-manager
+            ./hosts/nixos/sweetums/default.nix
           ];
         };
+      };
 
+      # Linux Home Manager configurations
+      homeConfigurations = {
         # Shared config for every Coder workspace; workspace hostnames vary, so
         # the Justfile selects this config when $CODER is set.
         coder = home-manager.lib.homeManagerConfiguration {
