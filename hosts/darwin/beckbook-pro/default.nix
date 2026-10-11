@@ -23,7 +23,7 @@
   # home-manager customizations
   home-manager.users.${config.machine.username} = {
     imports = [
-      ../../../modules/programs/llms
+      ../../../packages/llms
     ];
 
     programs.atuin = {

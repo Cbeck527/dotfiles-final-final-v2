@@ -125,80 +125,12 @@
               ;
           };
 
-        # NOTE: use my fork's release until https://gitea.com/gitea/tea/pulls/1130 gets merged
-        tea =
-          _: prev:
-          let
-            # Nix system -> release asset platform suffix and hash of its .xz asset.
-            assets = {
-              aarch64-darwin = {
-                platform = "darwin-arm64";
-                hash = "sha256-7kdPG9//Opclb+GCLcSVHBfdHL8lDvAb6kGU8vdAZk8=";
-              };
-              aarch64-linux = {
-                platform = "linux-arm64";
-                hash = "sha256-wL1eY2OurmMSXhSNoMr2JZQ8/nFB0xGLARhAXnXpZ+w=";
-              };
-              x86_64-linux = {
-                platform = "linux-amd64";
-                hash = "sha256-3OHTZw6lvv724ix8Lt1UiT5CI1I1tAfCvJzxC4DPYto=";
-              };
-            };
-            system = prev.stdenv.hostPlatform.system;
-            asset = assets.${system} or (throw "tea: no release asset for ${system}");
-          in
-          {
-            tea = prev.stdenv.mkDerivation (finalAttrs: {
-              pname = "tea";
-              version = "0.16.0-custom-headers";
-              src = prev.fetchurl {
-                url = "https://gitea.com/chrisbecker/tea/releases/download/v${finalAttrs.version}/tea-${finalAttrs.version}-${asset.platform}.xz";
-                inherit (asset) hash;
-              };
-              nativeBuildInputs = [ prev.installShellFiles ];
-
-              # The release asset is a bare xz-compressed binary, not a tarball.
-              unpackPhase = ''
-                xz -dc "$src" > tea
-              '';
-              installPhase = ''
-                runHook preInstall
-                install -Dm755 tea $out/bin/tea
-                runHook postInstall
-              '';
-              # Completions and the man page come from running the binary, so skip them when cross-compiling.
-              postInstall = prev.lib.optionalString (prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) ''
-                installShellCompletion --cmd tea \
-                  --bash <($out/bin/tea completion bash) \
-                  --fish <($out/bin/tea completion fish) \
-                  --zsh <($out/bin/tea completion zsh)
-                $out/bin/tea man --out $out/share/man/man1/tea.1
-              '';
-
-              meta = {
-                description = "Gitea CLI client with custom HTTP headers support";
-                homepage = "https://gitea.com/chrisbecker/tea";
-                license = prev.lib.licenses.mit;
-                mainProgram = "tea";
-                platforms = builtins.attrNames assets;
-                sourceProvenance = [ prev.lib.sourceTypes.binaryNativeCode ];
-              };
-            });
-          };
+        tea = _: prev: {
+          tea = prev.callPackage ./packages/tea.nix { };
+        };
 
         datadog-pup = _: prev: {
-          datadog-pup = prev.stdenv.mkDerivation (finalAttrs: {
-            pname = "datadog-pup";
-            version = "0.27.0";
-            src = prev.fetchurl {
-              url = "https://github.com/DataDog/pup/releases/download/v${finalAttrs.version}/pup_${finalAttrs.version}_Darwin_arm64.tar.gz";
-              hash = "sha256-beHU+qv/wv9Fa3oBHlGKjipoIF2Wcnq8CFz1xlyeVwk=";
-            };
-            sourceRoot = ".";
-            installPhase = ''
-              install -Dm755 pup $out/bin/pup
-            '';
-          });
+          datadog-pup = prev.callPackage ./packages/datadog-pup.nix { };
         };
 
         fenix = fenix.overlays.default;

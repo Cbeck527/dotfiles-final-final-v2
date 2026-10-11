@@ -9,12 +9,12 @@
     ../../../modules/shared/machine.nix
     ../../../modules/shared/identity.nix
     ../../../modules/linux/nix.nix
-    ../../../modules/programs/bash.nix
-    ../../../modules/programs/fish.nix
-    ../../../modules/programs/gpg.nix
-    ../../../modules/programs/git.nix
-    ../../../modules/programs/my-prompt.nix
-    ../../../modules/programs/tmux.nix
+    ../../../packages/bash.nix
+    ../../../packages/fish.nix
+    ../../../packages/gpg.nix
+    ../../../packages/git.nix
+    ../../../packages/my-prompt.nix
+    ../../../packages/tmux.nix
   ];
 
   machine.username = "christopher-becker";

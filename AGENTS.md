@@ -32,12 +32,13 @@ All hosts are declared in `flake.nix`. Darwin hosts build `aarch64-darwin` syste
 - `modules/nixos/user.nix`: the primary NixOS user account, built from `config.machine.*` (wheel, fish login shell, no password)
 - `modules/nixos/home-manager.nix`: the NixOS Home Manager integration and the user's shared program modules
 - `modules/linux/nix.nix`: Linux Home Manager Nix client settings (standalone Home Manager only; NixOS hosts own `nix.conf` at the system level)
-- `modules/programs/git.nix`, `modules/programs/gpg.nix`, `modules/programs/tmux.nix`, `modules/programs/fish.nix`, `modules/programs/bash.nix`: reusable Home Manager program modules
-- `modules/programs/llms/default.nix`, `modules/programs/llms/pi.nix`, `modules/programs/llms/omp.nix`: shared LLM CLI package setup
+- `packages/git.nix`, `packages/gpg.nix`, `packages/tmux.nix`, `packages/fish.nix`, `packages/bash.nix`, `packages/my-prompt.nix`: reusable Home Manager program modules
+- `packages/llms/default.nix`, `packages/llms/pi.nix`, `packages/llms/omp.nix`: shared LLM CLI package setup
+- `packages/tea.nix`, `packages/datadog-pup.nix`: `callPackage`-style derivations, exposed through the overlays of the same name in `flake.nix`
 - `scripts/audit-flake-inputs.sh`: flake input audit helper
 - `etc/doc/`: documentation assets
 
-Keep new config split by evaluation type and concern. Darwin system behavior belongs in `modules/darwin/*.nix`, NixOS system behavior belongs in `modules/nixos/*.nix`, non-NixOS Linux Home Manager support belongs in `modules/linux/*.nix`, reusable Home Manager program modules belong in `modules/programs/*.nix`, shared options belong in `modules/shared/*.nix`, and host-specific choices belong in `hosts/<eval-type>/<hostname>/default.nix`.
+Keep new config split by evaluation type and concern. Darwin system behavior belongs in `modules/darwin/*.nix`, NixOS system behavior belongs in `modules/nixos/*.nix`, non-NixOS Linux Home Manager support belongs in `modules/linux/*.nix`, reusable Home Manager program modules belong in `packages/*.nix`, custom package derivations belong in `packages/<name>.nix` (wired up via an overlay in `flake.nix`), shared options belong in `modules/shared/*.nix`, and host-specific choices belong in `hosts/<eval-type>/<hostname>/default.nix`.
 
 ## Commands
 Use `just` from the repository root.
@@ -59,7 +60,7 @@ Use `just` from the repository root.
 
 `Justfile` loads `local.just` with `mod local`. Use `just local::check`, `just local::build`, and `just local::switch` for the local private config. Top-level `just check`, `just build`, and `just switch` do not use the local private path.
 
-The `nx` fish function (defined in `modules/programs/fish.nix`) wraps `just` for running nix-config recipes from any directory: `nx switch`, `nx check`, `nx local::check`, etc.
+The `nx` fish function (defined in `packages/fish.nix`) wraps `just` for running nix-config recipes from any directory: `nx switch`, `nx check`, `nx local::check`, etc.
 
 ## Current Architecture
 
@@ -82,10 +83,9 @@ The main inputs currently include:
 `flake.nix` currently defines these overlays:
 
 - `terraform-157`: exposes `terraform_1_5_7`
-- `llm-agents`: exposes `claude-code`, `codex`, `omp`, `pi`, and `qmd`
-- `readwise-cli`: packages a pinned upstream release
-- `tea`: packages prebuilt release binaries from the `chrisbecker/tea` fork (custom HTTP headers support), with a per-system asset/hash table
-- `datadog-pup`: packages the DataDog `pup` binary for macOS arm64
+- `llm-agents`: exposes `claude-code`, `codex`, `omp`, and `pi`
+- `tea`: calls `packages/tea.nix`, which packages prebuilt release binaries from the `chrisbecker/tea` fork (custom HTTP headers support), with a per-system asset/hash table
+- `datadog-pup`: calls `packages/datadog-pup.nix`, which packages the DataDog `pup` binary for macOS arm64
 - `fenix`
 
 ### Shared configuration patterns
@@ -96,10 +96,10 @@ The main inputs currently include:
 - `modules/darwin/services.nix` currently defines the `services.caffeinate` launchd daemon option.
 - GUI apps are surfaced via `targets.darwin.copyApps.directory = "Applications/HomeManager"`.
 - Host files commonly extend `home-manager.users.<name>` and `homebrew.*` for per-machine customization.
-- `modules/shared/identity.nix` defines `options.identity` (name, email, gpgKey, githubUser) consumed by `modules/programs/git.nix` and `modules/programs/gpg.nix` via `config.identity.*`.
+- `modules/shared/identity.nix` defines `options.identity` (name, email, gpgKey, githubUser) consumed by `packages/git.nix` and `packages/gpg.nix` via `config.identity.*`.
 
 ### Host-specific patterns
-- `beckbook-pro`: sets `machine.username` and `machine.home` directly. Adds personal packages (qmd, readwise-cli, ffmpeg, terraform, SDR tools, etc.) and many additional casks.
+- `beckbook-pro`: sets `machine.username` and `machine.home` directly. Adds personal packages (ffmpeg, terraform, SDR tools, etc.) and many additional casks.
 - `mac-h99xrph3j9`: bridges `machine.username` and `machine.home` from the private module's `_module.args`. Uses `nix.settings.trusted-users = lib.mkAfter [ username ]` to add the work user. Excludes the `contexts` cask via `custom.homebrew.excludeCasks`. Uses the `datadog-pup` overlay and custom k9s views for Kubernetes work.
 - `sweetums` (NixOS): a KVM VPS booting via BIOS with GRUB on `/dev/vda`. `hardware-configuration.nix` was copied from the provider's install and should only change if the disk layout does. The host file holds the SSH public keys, shared by `root` and `chris`. `chris` has no password and gets passwordless sudo through `security.sudo.wheelNeedsPassword = false`. Home Manager runs as a NixOS module (`modules/nixos/home-manager.nix`), so `just switch` applies system and user config together; host-specific user settings live under `home-manager.users.<name>` in the host file. SSH hardening (disabling root login) is the planned next step. The same VPS ran Debian with a standalone `homeConfigurations.sweetums` until it was reinstalled with NixOS.
 - `coder`: pure Home Manager Linux host under `hosts/linux/coder`, shared by every Coder workspace. Mirrors the `sweetums` Home Manager user apart from `machine.username`/`machine.home` (`christopher-becker`), the Hjem CLI in `home.packages`, its dev/CLI tooling package set (including the fenix Rust toolchain, which is why its `pkgs` import applies `self.overlays.fenix`), and `custom.bash.fishHandoff.enable` (see the Coder login shell gotcha). Selected by hostname-independent `$CODER` detection in the `Justfile`. The only host using Hjem.
@@ -137,7 +137,7 @@ The Coder agent reads the login shell out of `/etc/passwd` and runs its own plum
 - Template scripts **without a shebang** are piped to the login shell on stdin. Coder's default startup script is `set -e` plus a comment; fish reads that as `set --erase` with no argument, exits 2, and the agent reports lifecycle `start_error` — the workspace shows "startup script failed" in the UI even though nothing of substance failed. Scripts *with* a shebang are unaffected, which is why every other template script ran fine.
 - Internal helpers are wrapped as `$SHELL -c 'cmd "$@"' -- args`. fish has no `$@`, so these exit 127. This kills devcontainer detection: `docker ps` fails, the container updater loop errors twice and stops for the life of the agent.
 
-`modules/programs/bash.nix` therefore keeps bash as the login shell and defines `custom.bash.fishHandoff.enable`, which appends an `exec fish` to the end of `.bashrc` for interactive sessions only. The coder host enables it. Guards in that block (`$-`, a `__NIXCFG_FISH_HANDOFF` sentinel, `TERM`/`INSIDE_EMACS`, and a `command -v fish` existence check) are documented inline and are each load-bearing — read the comment before trimming any of them.
+`packages/bash.nix` therefore keeps bash as the login shell and defines `custom.bash.fishHandoff.enable`, which appends an `exec fish` to the end of `.bashrc` for interactive sessions only. The coder host enables it. Guards in that block (`$-`, a `__NIXCFG_FISH_HANDOFF` sentinel, `TERM`/`INSIDE_EMACS`, and a `command -v fish` existence check) are documented inline and are each load-bearing — read the comment before trimming any of them.
 
 **Nix cannot own the `/etc/passwd` entry.** `chsh` is outside the Home Manager activation, so `just login-shell-bash` exists to set it and must be re-run after a workspace rebuild resets the passwd entry. Until it runs, the handoff is inert and fish is still the login shell.
 
@@ -182,7 +182,7 @@ Both `nix.settings.keep-outputs` and `nix.settings.keep-derivations` are set to 
 - Prefer small, composable modules over large monolithic files.
 - Follow the existing naming pattern: `modules/<eval-type-or-concern>/<feature>.nix` and `hosts/<eval-type>/<hostname>/default.nix`.
 - Keep shell scripts in `bash` with `set -euo pipefail`.
-- When changing overlays or custom package sources in `flake.nix`, update every hash together (e.g. all per-system assets in the `tea` overlay when bumping its version).
+- When changing overlays in `flake.nix` or package sources in `packages/`, update every hash together (e.g. all per-system assets in `packages/tea.nix` when bumping its version).
 - When changing flake inputs, review both `flake.lock` and the output of `just audit`.
 
 ## Validation

@@ -18,11 +18,11 @@ in
     users.${username} = {
       imports = [
         ../shared/identity.nix
-        ../programs/fish.nix
-        ../programs/gpg.nix
-        ../programs/git.nix
-        ../programs/my-prompt.nix
-        ../programs/tmux.nix
+        ../../packages/fish.nix
+        ../../packages/gpg.nix
+        ../../packages/git.nix
+        ../../packages/my-prompt.nix
+        ../../packages/tmux.nix
       ];
 
       home.stateVersion = "26.05";
