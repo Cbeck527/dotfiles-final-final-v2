@@ -124,56 +124,66 @@
               ;
           };
 
-        # Custom tea build pinned to bfbec3f with CF Access custom headers patch
-        tea = _: prev: {
-          tea = (prev.buildGoModule.override { go = prev.go_1_26; }) {
-            pname = "tea";
-            version = "0.12.0-custom-headers";
-
-            src = prev.fetchFromGitea {
-              domain = "gitea.com";
-              owner = "gitea";
-              repo = "tea";
-              rev = "bfbec3fc00e12d88a5490d42e64a984445135929";
-              hash = "sha256-i10EMmaYl5gWVV5B4gLpX8ZVKxKb9pVsFkvBIvqQjkA=";
+        # NOTE: use my fork's release until https://gitea.com/gitea/tea/pulls/1130 gets merged
+        tea =
+          _: prev:
+          let
+            # Nix system -> release asset platform suffix and hash of its .xz asset.
+            assets = {
+              aarch64-darwin = {
+                platform = "darwin-arm64";
+                hash = "sha256-7kdPG9//Opclb+GCLcSVHBfdHL8lDvAb6kGU8vdAZk8=";
+              };
+              aarch64-linux = {
+                platform = "linux-arm64";
+                hash = "sha256-wL1eY2OurmMSXhSNoMr2JZQ8/nFB0xGLARhAXnXpZ+w=";
+              };
+              x86_64-linux = {
+                platform = "linux-amd64";
+                hash = "sha256-3OHTZw6lvv724ix8Lt1UiT5CI1I1tAfCvJzxC4DPYto=";
+              };
             };
+            system = prev.stdenv.hostPlatform.system;
+            asset = assets.${system} or (throw "tea: no release asset for ${system}");
+          in
+          {
+            tea = prev.stdenv.mkDerivation (finalAttrs: {
+              pname = "tea";
+              version = "0.16.0-custom-headers";
+              src = prev.fetchurl {
+                url = "https://gitea.com/chrisbecker/tea/releases/download/v${finalAttrs.version}/tea-${finalAttrs.version}-${asset.platform}.xz";
+                inherit (asset) hash;
+              };
+              nativeBuildInputs = [ prev.installShellFiles ];
 
-            patches = [ ./etc/patches/tea-custom-headers.patch ];
-            vendorHash = "sha256-FnKq34/0pPOUNRwB6T/kSrNo2gMm1H9ob1y9srTWstY=";
+              # The release asset is a bare xz-compressed binary, not a tarball.
+              unpackPhase = ''
+                xz -dc "$src" > tea
+              '';
+              installPhase = ''
+                runHook preInstall
+                install -Dm755 tea $out/bin/tea
+                runHook postInstall
+              '';
+              # Completions and the man page come from running the binary, so skip them when cross-compiling.
+              postInstall = prev.lib.optionalString (prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) ''
+                installShellCompletion --cmd tea \
+                  --bash <($out/bin/tea completion bash) \
+                  --fish <($out/bin/tea completion fish) \
+                  --zsh <($out/bin/tea completion zsh)
+                $out/bin/tea man --out $out/share/man/man1/tea.1
+              '';
 
-            ldflags = [
-              "-s"
-              "-w"
-              "-X"
-              "code.gitea.io/tea/modules/version.Version=0.12.0-custom-headers"
-              "-X"
-              "code.gitea.io/tea/modules/version.Tags=nixpkgs"
-              "-X"
-              "code.gitea.io/tea/modules/version.SDK=v0.24.1"
-            ];
-
-            checkFlags = [ "-skip=TestRepoFromPath_Worktree" ];
-            nativeBuildInputs = [ prev.installShellFiles ];
-            nativeCheckInputs = [ prev.writableTmpDirAsHomeHook ];
-
-            postInstall = prev.lib.optionalString (prev.stdenv.buildPlatform.canExecute prev.stdenv.hostPlatform) ''
-              installShellCompletion --cmd tea \
-                --bash <($out/bin/tea completion bash) \
-                --fish <($out/bin/tea completion fish) \
-                --zsh <($out/bin/tea completion zsh)
-              mkdir -p $out/share/powershell
-              $out/bin/tea completion pwsh > $out/share/powershell/tea.Completion.ps1
-              $out/bin/tea man --out $out/share/man/man1/tea.1
-            '';
-
-            meta = {
-              description = "Gitea CLI client with custom HTTP headers support";
-              homepage = "https://gitea.com/gitea/tea";
-              license = prev.lib.licenses.mit;
-              mainProgram = "tea";
-            };
+              meta = {
+                description = "Gitea CLI client with custom HTTP headers support";
+                homepage = "https://gitea.com/chrisbecker/tea";
+                license = prev.lib.licenses.mit;
+                mainProgram = "tea";
+                platforms = builtins.attrNames assets;
+                sourceProvenance = [ prev.lib.sourceTypes.binaryNativeCode ];
+              };
+            });
           };
-        };
 
         datadog-pup = _: prev: {
           datadog-pup = prev.stdenv.mkDerivation (finalAttrs: {
@@ -246,6 +256,7 @@
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
           modules = [
+            { nixpkgs.overlays = [ self.overlays.tea ]; }
             home-manager.nixosModules.home-manager
             ./hosts/nixos/sweetums/default.nix
           ];

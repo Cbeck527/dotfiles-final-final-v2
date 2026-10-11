@@ -35,7 +35,6 @@ All hosts are declared in `flake.nix`. Darwin hosts build `aarch64-darwin` syste
 - `modules/programs/git.nix`, `modules/programs/gpg.nix`, `modules/programs/tmux.nix`, `modules/programs/fish.nix`, `modules/programs/bash.nix`: reusable Home Manager program modules
 - `modules/programs/llms/default.nix`, `modules/programs/llms/pi.nix`, `modules/programs/llms/omp.nix`: shared LLM CLI package setup
 - `scripts/audit-flake-inputs.sh`: flake input audit helper
-- `etc/patches/tea-custom-headers.patch`: patch used by the custom `tea` overlay
 - `etc/doc/`: documentation assets
 
 Keep new config split by evaluation type and concern. Darwin system behavior belongs in `modules/darwin/*.nix`, NixOS system behavior belongs in `modules/nixos/*.nix`, non-NixOS Linux Home Manager support belongs in `modules/linux/*.nix`, reusable Home Manager program modules belong in `modules/programs/*.nix`, shared options belong in `modules/shared/*.nix`, and host-specific choices belong in `hosts/<eval-type>/<hostname>/default.nix`.
@@ -85,7 +84,7 @@ The main inputs currently include:
 - `terraform-157`: exposes `terraform_1_5_7`
 - `llm-agents`: exposes `claude-code`, `codex`, `omp`, `pi`, and `qmd`
 - `readwise-cli`: packages a pinned upstream release
-- `tea`: packages a custom patched `tea` build using `etc/patches/tea-custom-headers.patch`
+- `tea`: packages prebuilt release binaries from the `chrisbecker/tea` fork (custom HTTP headers support), with a per-system asset/hash table
 - `datadog-pup`: packages the DataDog `pup` binary for macOS arm64
 - `fenix`
 
@@ -183,7 +182,7 @@ Both `nix.settings.keep-outputs` and `nix.settings.keep-derivations` are set to 
 - Prefer small, composable modules over large monolithic files.
 - Follow the existing naming pattern: `modules/<eval-type-or-concern>/<feature>.nix` and `hosts/<eval-type>/<hostname>/default.nix`.
 - Keep shell scripts in `bash` with `set -euo pipefail`.
-- When changing overlays or custom package sources in `flake.nix`, update hashes and any related files in `etc/patches/` together.
+- When changing overlays or custom package sources in `flake.nix`, update every hash together (e.g. all per-system assets in the `tea` overlay when bumping its version).
 - When changing flake inputs, review both `flake.lock` and the output of `just audit`.
 
 ## Validation

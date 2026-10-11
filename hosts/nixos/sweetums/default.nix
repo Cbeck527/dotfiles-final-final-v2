@@ -43,6 +43,7 @@ in
   home-manager.users.${config.machine.username} = {
     home.packages = with pkgs; [
       statix
+      tea
       zmx
     ];
 
