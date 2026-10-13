@@ -7,6 +7,8 @@ I am trying to be good at computers.
 
 ## Docs
 
+- [Dynamic bootstrap installer](installer/README.md): Cloudflare Worker scaffold
+  for `dotfiles.cmb.software`, with host, Git ref, and build options.
 - [Debian bootstrap](etc/doc/debian-bootstrap.md)
 - Coder workspaces: `just coder-bootstrap` installs Lix and clones this repo to
   `~/.config/nix-config` (needs `just`, `git`, and `curl` on the image first).
