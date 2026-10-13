@@ -101,6 +101,30 @@
         inherit (inputs.nixpkgs) lib;
         inherit (inputs) hjem;
       };
+
+      # Every host gets every overlay; each one only adds or replaces attributes
+      # it names, so an overlay a host never uses costs nothing.
+      hostOverlays = [
+        self.overlays.fenix
+        self.overlays.terraform-157
+        self.overlays.llm-agents
+        self.overlays.tea
+        self.overlays.datadog-pup
+      ];
+
+      mkDarwin =
+        hostname:
+        nix-darwin.lib.darwinSystem {
+          system = "aarch64-darwin";
+          specialArgs = { inherit inputs; };
+          modules = [
+            { nixpkgs.overlays = hostOverlays; }
+            nix-homebrew.darwinModules.nix-homebrew
+            home-manager.darwinModules.home-manager
+            nix-config-private.darwinModules.${hostname}
+            ./hosts/darwin/${hostname}/default.nix
+          ];
+        };
     in
     {
       overlays = {
@@ -138,48 +162,11 @@
 
       # macOS configurations
       darwinConfigurations = {
-
         # Personal
-        beckbook-pro = nix-darwin.lib.darwinSystem {
-          system = "aarch64-darwin";
-          specialArgs = { inherit inputs; };
-          modules = [
-            {
-              nixpkgs.overlays = [
-                self.overlays.fenix
-                self.overlays.terraform-157
-                self.overlays.llm-agents
-                self.overlays.tea
-                self.overlays.datadog-pup
-              ];
-            }
-            nix-homebrew.darwinModules.nix-homebrew
-            home-manager.darwinModules.home-manager
-            nix-config-private.darwinModules.beckbook-pro
-            ./hosts/darwin/beckbook-pro/default.nix
-          ];
-        };
+        beckbook-pro = mkDarwin "beckbook-pro";
 
         # work
-        mac-h99xrph3j9 = nix-darwin.lib.darwinSystem {
-          system = "aarch64-darwin";
-          specialArgs = { inherit inputs; };
-          modules = [
-            {
-              nixpkgs.overlays = [
-                self.overlays.fenix
-                self.overlays.terraform-157
-                self.overlays.llm-agents
-                self.overlays.tea
-                self.overlays.datadog-pup
-              ];
-            }
-            nix-homebrew.darwinModules.nix-homebrew
-            home-manager.darwinModules.home-manager
-            nix-config-private.darwinModules.mac-h99xrph3j9
-            ./hosts/darwin/mac-h99xrph3j9/default.nix
-          ];
-        };
+        mac-h99xrph3j9 = mkDarwin "mac-h99xrph3j9";
       };
 
       # NixOS configurations
@@ -189,7 +176,7 @@
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
           modules = [
-            { nixpkgs.overlays = [ self.overlays.tea ]; }
+            { nixpkgs.overlays = hostOverlays; }
             home-manager.nixosModules.home-manager
             ./hosts/nixos/sweetums/default.nix
           ];
@@ -203,7 +190,7 @@
         coder = home-manager.lib.homeManagerConfiguration {
           pkgs = import inputs.nixpkgs {
             system = "x86_64-linux";
-            overlays = [ self.overlays.fenix ];
+            overlays = hostOverlays;
           };
           extraSpecialArgs = { inherit inputs; };
           modules = [

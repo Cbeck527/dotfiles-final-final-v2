@@ -1,4 +1,9 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 let
   # Public keys allowed to log in over SSH
   sshKeys = [
@@ -15,7 +20,6 @@ in
     ../../../modules/shared/machine.nix
     ../../../modules/nixos/defaults.nix
     ../../../modules/nixos/user.nix
-    ../../../modules/nixos/home-manager.nix
   ];
 
   machine.username = "chris";
@@ -40,11 +44,21 @@ in
     trusted-public-keys = [ "my-prompt.cachix.org-1:aIzUDavhE5lzcsn6awg73yVAUnjMrAeqPATi3XrIZ0Q=" ];
   };
 
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    backupFileExtension = "hm-backup";
+    extraSpecialArgs = { inherit inputs; };
+  };
+
   home-manager.users.${config.machine.username} = {
+    imports = [ ../../../modules/home/base.nix ];
+
+    home.stateVersion = "26.05";
+
     home.packages = with pkgs; [
       statix
       tea
-      zmx
     ];
 
     # Headless server: no gh credential helper, and no jj/delta/LFS

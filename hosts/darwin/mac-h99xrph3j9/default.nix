@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  inputs,
   username,
   userHome,
   ...
@@ -11,7 +12,7 @@
     ../../../modules/darwin/defaults.nix
     ../../../modules/darwin/homebrew.nix
     ../../../modules/darwin/services.nix
-    ../../../modules/darwin/home-manager.nix
+    ../../../modules/darwin/user.nix
     ../../../modules/darwin/emacs-macport.nix
   ];
 
@@ -24,7 +25,22 @@
 
   custom.homebrew.excludeCasks = [ "contexts" ];
 
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    backupFileExtension = "hm-backup";
+    extraSpecialArgs = { inherit inputs; };
+  };
+
   home-manager.users.${username} = {
+    imports = [
+      ../../../modules/home/base.nix
+      ../../../modules/home/darwin.nix
+      ../../../modules/home/dev.nix
+    ];
+
+    home.stateVersion = "25.05";
+
     programs.k9s.views = {
       "v1/pods" = {
         sortColumn = "NAME:asc";

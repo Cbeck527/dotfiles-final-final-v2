@@ -5,6 +5,8 @@
 }:
 
 {
+  imports = [ ../shared/nix.nix ];
+
   # package config
   nixpkgs = {
     config = {
@@ -14,23 +16,13 @@
   };
 
   nix = {
-    package = pkgs.lix;
     settings = {
-      warn-dirty = false;
       # "relaxed" allows per-derivation sandbox opt-out via __noChroot.
       # Required for emacs-macport: byte-compiling url.el triggers GnuTLS
       # cert scanning of /etc/ssl/certs, which strict sandboxing blocks.
       sandbox = "relaxed";
 
       trusted-users = [ "@admin" ];
-
-      # Auto-accept nixConfig from flakes (e.g. extra-substituters)
-      accept-flake-config = true;
-
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
 
       keep-outputs = true;
       keep-derivations = true;

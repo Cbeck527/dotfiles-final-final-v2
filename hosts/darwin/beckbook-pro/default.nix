@@ -1,6 +1,7 @@
 {
   pkgs,
   config,
+  inputs,
   ...
 }:
 {
@@ -9,7 +10,7 @@
     ../../../modules/darwin/defaults.nix
     ../../../modules/darwin/homebrew.nix
     ../../../modules/darwin/services.nix
-    ../../../modules/darwin/home-manager.nix
+    ../../../modules/darwin/user.nix
     # NOTE: temporarily commented out in favor of manual build fom
     # https://github.com/jimeh/build-emacs-for-macos/
     # ../../../modules/darwin/emacs-macport.nix
@@ -20,11 +21,22 @@
 
   system.primaryUser = "chris";
 
-  # home-manager customizations
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    backupFileExtension = "hm-backup";
+    extraSpecialArgs = { inherit inputs; };
+  };
+
   home-manager.users.${config.machine.username} = {
     imports = [
+      ../../../modules/home/base.nix
+      ../../../modules/home/darwin.nix
+      ../../../modules/home/dev.nix
       ../../../packages/llms
     ];
+
+    home.stateVersion = "25.05";
 
     programs.atuin = {
       settings = {
