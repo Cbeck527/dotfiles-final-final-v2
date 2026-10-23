@@ -22,9 +22,6 @@ All hosts are declared in `flake.nix`. Darwin hosts build `aarch64-darwin` syste
 - `hosts/darwin/<hostname>/default.nix`: nix-darwin host-specific configuration entry points
 - `hosts/nixos/<hostname>/default.nix`: NixOS host-specific configuration entry points, next to that host's `hardware-configuration.nix`
 - `hosts/linux/<hostname>/default.nix`: pure Home Manager host-specific configuration entry points for non-NixOS Linux (`coder` is keyed by environment, not hostname)
-- `hosts/linux/coder/hjem.nix`: Hjem-managed dotfiles for Coder workspaces (a Hjem module, not a Home Manager module)
-- `hosts/linux/coder/dotfiles/`: raw dotfiles linked into `$HOME` by Hjem
-- `lib/hjem.nix`: evaluates Hjem's per-user module standalone and emits a v3 manifest
 - `modules/shared/machine.nix`: shared options for `machine.username` and `machine.home`
 - `modules/shared/identity.nix`: shared identity options consumed by Git and GPG modules
 - `modules/shared/nix.nix`: Nix settings common to every host (Lix, flakes, `accept-flake-config`, `warn-dirty`); imported by nix-darwin, NixOS, and standalone Home Manager alike
@@ -54,14 +51,12 @@ Use `just` from the repository root.
 - `just login-shell-bash`: point the `/etc/passwd` login shell at `/bin/bash` (Linux; see the Coder login shell gotcha). Refuses to run until the fish handoff is linked into `~/.bashrc`.
 - `just clean`: run `nix-collect-garbage`
 - `just deep-clean`: delete old system generations, then garbage collect
-- `just hjem-switch`: build the Hjem manifest and link dotfiles into `$HOME` (Coder workspaces only; `just switch` runs this automatically there)
-- `just hjem-build`: build and validate the Hjem manifest without linking anything (Coder workspaces only)
 - `just audit`: run `scripts/audit-flake-inputs.sh`
 - `just update`: update all tracked flake input groups
 - `just update-nix`, `just update-osx`, `just update-home`, `just update-extra`, `just update-llms`: update specific input groups (private recipes, hidden from `just --list`)
 - `just lock`: lock missing flake inputs without updating existing lock entries
 
-Linux-only recipes (`hjem-switch`, `hjem-build`, `login-shell-bash`, `coder-bootstrap`) don't appear in `just --list` on macOS.
+Linux-only recipes (`login-shell-bash`, `coder-bootstrap`) don't appear in `just --list` on macOS.
 
 `Justfile` loads `local.just` with `mod local`. Use `just local::check`, `just local::build`, and `just local::switch` for the local private config. Top-level `just check`, `just build`, and `just switch` do not use the local private path.
 
@@ -83,7 +78,6 @@ The main inputs currently include:
 - `llm-agents-nix`
 - `my-prompt` (prompt binary, with its own Cachix cache)
 - `attic` (attic-client)
-- `hjem` (dotfile management, `coder` host only)
 - private `nix-config-private`
 
 ### Overlays
@@ -103,11 +97,11 @@ There is no shared Home Manager wiring module. Every host file spells out its ow
 | Layer | Contents | Imported by |
 | --- | --- | --- |
 | `modules/shared/nix.nix` | Lix, flakes, `accept-flake-config`, `warn-dirty` | `modules/darwin/defaults.nix`, `modules/nixos/defaults.nix`, `coder` |
-| `modules/home/base.nix` | identity, fish, git, gpg, tmux, my-prompt, direnv, ripgrep, bat, eza, attic-client, atuin, nh, uv, and the core CLI package set (including `zmx`) | every host |
-| `modules/home/darwin.nix` | copyApps, `nh.darwinFlake`, Ghostty and `toggle-solarized`, eza fish integration off, and the macOS workstation package set | both Darwin hosts |
-| `modules/home/dev.nix` | k9s (`packages/k9s.nix`) and dev tooling: Go, Node, Python, the fenix Rust toolchain, language servers, Docker/Kubernetes/AWS CLIs | `beckbook-pro`, `mac-h99xrph3j9`, `coder` |
+| `modules/home/base.nix` | identity, fish (abbrs, functions, key binds, solarized colors), git, gpg, tmux, my-prompt, `xdg.enable` and the shared session variables/PATH, direnv, ripgrep, bat, eza (fish functions; HM's eza aliases off), fzf (atuin owns Ctrl-R), attic-client, atuin, nh, uv, and the core CLI package set (including `zmx`) | every host |
+| `modules/home/darwin.nix` | copyApps, `nh.darwinFlake`, Ghostty and `toggle-solarized`, macOS session variables, abbrs, and Emacs.app PATH entries, and the macOS workstation package set | both Darwin hosts |
+| `modules/home/dev.nix` | k9s (`packages/k9s.nix`), zoxide (`j`), XDG-relocated language toolchain variables, and dev tooling: Go, Node, Python, the fenix Rust toolchain, language servers, Docker/Kubernetes/AWS CLIs | `beckbook-pro`, `mac-h99xrph3j9`, `coder` |
 
-`home.stateVersion` is set in each host file, never in a shared layer: `25.05` on both Darwin hosts and `coder`, `26.05` on `sweetums`. Settings that differ per host (e.g. `programs.eza.enableFishIntegration`, off on Darwin and `coder`) are set in the narrower layer or host file rather than overridden with `mkForce`.
+`home.stateVersion` is set in each host file, never in a shared layer: `25.05` on both Darwin hosts and `coder`, `26.05` on `sweetums`. Settings that differ per host (e.g. `custom.git.extras.enable`, off on `coder`) are set in the narrower layer or host file rather than overridden with `mkForce`.
 
 `flake.nix` applies one overlay list, `hostOverlays`, to every host's `pkgs`, so a shared layer can use any overlaid package. Darwin hosts are built with `mkDarwin <hostname>`, which also pulls in `nix-config-private.darwinModules.<hostname>`.
 
@@ -125,7 +119,7 @@ There is no shared Home Manager wiring module. Every host file spells out its ow
 - `beckbook-pro`: sets `machine.username` and `machine.home` directly. Imports `packages/llms` on top of the `base`/`darwin`/`dev` layers, points atuin at a self-hosted sync server, adds a few personal packages (ffmpeg, cowsay, fortune), and many additional casks. `modules/darwin/emacs-macport.nix` is commented out in favor of a manual Emacs build.
 - `mac-h99xrph3j9`: bridges `machine.username` and `machine.home` from the private module's `_module.args`. Uses `nix.settings.trusted-users = lib.mkAfter [ username ]` to add the work user. Excludes the `contexts` cask via `custom.homebrew.excludeCasks`. Uses the `datadog-pup` overlay and custom k9s views for Kubernetes work.
 - `sweetums` (NixOS): a KVM VPS booting via BIOS with GRUB on `/dev/vda`. `hardware-configuration.nix` was copied from the provider's install and should only change if the disk layout does. The host file holds the SSH public keys, shared by `root` and `chris`. `chris` has no password and gets passwordless sudo through `security.sudo.wheelNeedsPassword = false`. Home Manager runs as a NixOS module, so `just switch` applies system and user config together. The host imports only the `base` layer, plus a few packages and the headless git settings, all under `home-manager.users.<name>`. SSH hardening (disabling root login) is the planned next step. The same VPS ran Debian with a standalone `homeConfigurations.sweetums` until it was reinstalled with NixOS.
-- `coder`: pure Home Manager Linux host under `hosts/linux/coder`, shared by every Coder workspace. Imports `modules/shared/nix.nix`, `modules/home/base.nix`, `modules/home/dev.nix`, and `packages/bash.nix` directly. The host file adds `machine.username`/`machine.home` (`christopher-becker`), the Hjem CLI and Coder-only packages (`delta`, `herdr`) in `home.packages`, headless git settings, eza fish integration off (Hjem's `eza.fish` owns those functions), and `custom.bash.fishHandoff.enable` (see the Coder login shell gotcha). Selected by hostname-independent `$CODER` detection in the `Justfile`. The only host using Hjem.
+- `coder`: pure Home Manager Linux host under `hosts/linux/coder`, shared by every Coder workspace. Imports `modules/shared/nix.nix`, `modules/home/base.nix`, `modules/home/dev.nix`, and `packages/bash.nix` directly. The host file adds `machine.username`/`machine.home` (`christopher-becker`), Coder-only packages (`delta`, `herdr`) in `home.packages`, headless git settings, and `custom.bash.fishHandoff.enable` (see the Coder login shell gotcha). Selected by hostname-independent `$CODER` detection in the `Justfile`.
 
 ## Gotchas & Non-Obvious Patterns
 
@@ -164,17 +158,7 @@ The Coder agent reads the login shell out of `/etc/passwd` and runs its own plum
 
 **Nix cannot own the `/etc/passwd` entry.** `chsh` is outside the Home Manager activation, so `just login-shell-bash` exists to set it and must be re-run after a workspace rebuild resets the passwd entry. Until it runs, the handoff is inert and fish is still the login shell.
 
-Unrelated but adjacent: Coder modules that append to shell profiles fail on this host, because `~/.profile`, `~/.bashrc`, and `~/.config/fish/config.fish` are all read-only nix store symlinks. The `claude-code` module's `add_path_to_shell_profiles()` hits this and exits 1. It is harmless — `~/.local/bin` is already on `PATH` via `dotfiles/fish/conf.d/00-base.fish` — but it is a second, permanent red script in the Coder UI that is *not* a fish problem and should not be chased as one.
-
-### Hjem (dotfiles) on the coder host
-[Hjem](https://github.com/feel-co/hjem) manages `$HOME` files on Coder workspaces only. It is **not** a Home Manager module, and the two systems know nothing about each other:
-
-- Hjem publishes module entry points for NixOS, nix-darwin, and Finix — but not for pure Home Manager hosts. `lib/hjem.nix` therefore evaluates Hjem's platform-agnostic per-user module (`modules/common/user.nix` inside the input, module class `"hjem"`) with `lib.evalModules`, then builds the v3 manifest the same way `modules/nixos/base.nix` does upstream. This reaches into the input's file layout, so a Hjem update can break it; the failure is a loud eval error, and the fix is to re-check `modules/common/user.nix` and `modules/nixos/base.nix` upstream. Hjem's `modules/nixos/systemd.nix` is deliberately not imported (it needs NixOS `utils`), so per-user systemd unit options are unavailable.
-- **`just hjem-switch` builds the manifest before linking, and that ordering matters.** `hjem standalone switch --flake` links files *before* it realises their store paths, so any source that isn't already built — every file using `text` or `generator` — fails to activate with "source does not exist". The recipe instead builds `hjemConfigurations.<user>.manifestFile` (whose JSON string context pulls in every source) and passes the result to `--manifest`. The `manifest` attribute is still exposed for `nix eval` and for upstream's `--flake` workflow, with that caveat.
-- New dotfiles must be `git add`ed before a switch sees them: the manifest is built from this repo as a git flake, so untracked files do not exist as far as Nix is concerned.
-- Keep Hjem and Home Manager paths disjoint. Hjem defaults to `clobberFiles = false` here, so it backs up rather than overwrites existing paths (`.backup-` prefix), but nothing prevents the two from fighting over the same file.
-- `nix flake check` warns `unknown flake output 'hjemConfigurations'`. That output name is the CLI's convention (`hjem standalone switch --flake` reads `hjemConfigurations."$USER"`), not a standard flake schema output. The warning is expected.
-- State lives in `~/.local/state/hjem/standalone`. `hjem standalone generations`, `hjem standalone rollback`, and `hjem standalone expire-generations --keep-last N` manage it; there are no just recipes for those.
+Unrelated but adjacent: Coder modules that append to shell profiles fail on this host, because `~/.profile`, `~/.bashrc`, and `~/.config/fish/config.fish` are all read-only nix store symlinks. The `claude-code` module's `add_path_to_shell_profiles()` hits this and exits 1. It is harmless — `~/.local/bin` is already on `PATH` via `home.sessionPath` in `modules/home/base.nix` — but it is a second, permanent red script in the Coder UI that is *not* a fish problem and should not be chased as one.
 
 ### NixOS hosts
 - **Lockout risk.** A bad `users`, `services.openssh`, or `networking` change can lock you out of a remote host. Use `nixos-rebuild dry-activate` (or `switch-to-configuration dry-activate` on a built system) to see which units will restart, and keep an existing SSH session open while confirming a switch from a second one. GRUB keeps previous generations for rollback, but on a VPS reaching GRUB means the provider's console.

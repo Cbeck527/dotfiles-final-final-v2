@@ -72,8 +72,7 @@ Lix installer; unusual containers without systemd need a manual Lix installation
 first.
 
 Activation is manual. The script prints commands that work before `just` or
-`darwin-rebuild` is on PATH. For Coder it also prints the Hjem activation and bash
-login-shell steps after Home Manager activation. It does not install Homebrew,
+`darwin-rebuild` is on PATH. For Coder it also prints the bash login-shell step after Home Manager activation. It does not install Homebrew,
 activate dotfiles, or change the login shell.
 
 ## Develop and validate

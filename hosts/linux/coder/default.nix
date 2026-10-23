@@ -1,7 +1,6 @@
 {
   pkgs,
   config,
-  inputs,
   ...
 }:
 {
@@ -26,9 +25,6 @@
       # integration) is off — this is the bare binary.
       delta
       herdr
-
-      # Dotfile management; see hjem.nix in this directory
-      inputs.hjem.packages.${pkgs.stdenv.hostPlatform.system}.hjem
     ];
   };
 
@@ -39,8 +35,4 @@
   # and parts of it are bash-only. Keep bash there and exec fish for interactive
   # sessions; `just login-shell-bash` sets the passwd entry to match.
   custom.bash.fishHandoff.enable = true;
-
-  # The Hjem-managed dotfiles/fish/conf.d/zoxide.fish runs
-  # `zoxide init --cmd j` itself; don't init it twice.
-  programs.zoxide.enableFishIntegration = false;
 }

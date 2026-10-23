@@ -15,6 +15,17 @@ in
     ];
   };
 
+  programs.fish = {
+    shellAbbrs = {
+      zq = "zoxide query";
+      za = "zoxide add";
+    };
+    functions.k = {
+      wraps = "kubectl";
+      body = "kubectl $argv";
+    };
+  };
+
   # Keep language toolchains out of $HOME
   home.sessionVariables = {
     # Python

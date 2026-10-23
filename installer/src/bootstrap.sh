@@ -105,7 +105,7 @@ main() {
   else
     printf '%s\n' '  HOME_MANAGER_BACKUP_EXT=hm-backup HOME_MANAGER_BACKUP_OVERWRITE=1 ./result/activate'
     if [[ "$host" == coder ]]; then
-      printf '%s\n' '  CODER=true just hjem-switch' '  just login-shell-bash'
+      printf '%s\n' '  just login-shell-bash'
     fi
   fi
 }

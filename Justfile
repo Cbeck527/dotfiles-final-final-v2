@@ -18,17 +18,13 @@ impure := if IMPURE == "true" { "--impure" } else { "" }
 is_nixos := path_exists('/etc/NIXOS')
 linux_build_attr := if is_nixos == "true" { ".#nixosConfigurations." + target + ".config.system.build.toplevel" } else { ".#homeConfigurations." + target + ".activationPackage" }
 
-# Hjem manages dotfiles on Coder workspaces only, out of band from Home Manager
-hjem_manifest := '.#hjemConfigurations."' + `id -un` + '".manifestFile'
-hjem_hook := if target == "coder" { "just hjem-switch" } else { "true" }
-
 # Build and apply using local private config
 mod local
 
 NIX_CHANNELS := "nixpkgs treefmt-nix"
 HOME_CHANNELS := "home-manager"
 OSX_CHANNELS := "nix-darwin nix-homebrew homebrew-core homebrew-cask"
-EXTRA_CHANNELS := "fenix my-prompt attic nix-config-private hjem"
+EXTRA_CHANNELS := "fenix my-prompt attic nix-config-private"
 LLM_CHANNELS := "llm-agents-nix"
 
 # Apply config for current hostname
@@ -51,27 +47,12 @@ switch:
     # the NixOS/nix-darwin wrapper modules), so pass it through the env vars the
     # activation script reads directly.
     HOME_MANAGER_BACKUP_EXT=hm-backup HOME_MANAGER_BACKUP_OVERWRITE=1 ./result/activate
-    {{ hjem_hook }}
 
 # Deploy a NixOS host over SSH: evaluated here, built and activated on the target
 [group('build')]
 deploy host target_host:
     nix run --inputs-from . nixpkgs#nixos-rebuild-ng -- switch --flake ".#{{ host }}" \
       --target-host "{{ target_host }}" --build-host "{{ target_host }}" --fallback
-
-# Link Hjem-managed dotfiles into $HOME (Coder only)
-# The manifest is built first so every source exists before hjem links it.
-[linux]
-[group('build')]
-hjem-switch: _require-coder
-    nix build '{{ hjem_manifest }}' --out-link result-hjem
-    hjem standalone switch --manifest result-hjem
-
-# Build Hjem-managed dotfiles without linking them (Coder only)
-[linux]
-[group('build')]
-hjem-build: _require-coder
-    hjem standalone build --manifest "$(nix build --no-link --print-out-paths '{{ hjem_manifest }}')"
 
 [private]
 _require-coder:

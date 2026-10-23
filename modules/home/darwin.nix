@@ -80,14 +80,6 @@
     "o." = "open .";
   };
 
-  programs.fish.functions.ssh-add-keys = {
-    description = "Add common SSH keys to agent";
-    body = ''
-      ssh-add ~/.ssh/id_ed25519 2>/dev/null
-      ssh-add ~/.ssh/id_rsa 2>/dev/null
-    '';
-  };
-
   home.packages = with pkgs; [
     # global nix utilities
     devenv

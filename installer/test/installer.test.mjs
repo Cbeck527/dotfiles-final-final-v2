@@ -75,7 +75,7 @@ test("builds the Linux activation package through sh and safely reuses a checkou
   assert.equal(result.status, 0, result.stderr);
   assert.match(machine.log(), /git clone --branch trunk -- https:\/\/github.com\/Cbeck527\/dotfiles-final-final-v2.git/);
   assert.match(machine.log(), /--accept-flake-config build --no-write-lock-file .#homeConfigurations.coder.activationPackage/);
-  assert.match(result.stdout, /CODER=true just hjem-switch/);
+  assert.match(result.stdout, /just login-shell-bash/);
   machine.clearLog();
   result = machine.run(script);
   assert.equal(result.status, 0, result.stderr);
@@ -93,7 +93,7 @@ test("auto detects Coder and each platform's hostname", async (t) => {
     const result = machine.run(await request().text());
     assert.equal(result.status, 0, result.stderr);
     assert.ok(machine.log().includes(`.#${output}`), machine.log());
-    assert.doesNotMatch(machine.log(), /sudo|activate|hjem/);
+    assert.doesNotMatch(machine.log(), /sudo|activate/);
   }
 });
 
