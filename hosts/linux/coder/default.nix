@@ -40,11 +40,7 @@
   # sessions; `just login-shell-bash` sets the passwd entry to match.
   custom.bash.fishHandoff.enable = true;
 
-  programs.eza = {
-    # The Hjem-managed dotfiles/fish/conf.d/eza.fish defines the full set of
-    # list functions (l, lg, lm, lt, ltl, lz, ...). Home Manager's integration
-    # writes ls/ll/la/lt aliases into config.fish, which is sourced after
-    # conf.d and would shadow them.
-    enableFishIntegration = false;
-  };
+  # The Hjem-managed dotfiles/fish/conf.d/zoxide.fish runs
+  # `zoxide init --cmd j` itself; don't init it twice.
+  programs.zoxide.enableFishIntegration = false;
 }

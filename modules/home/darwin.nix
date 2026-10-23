@@ -61,7 +61,32 @@
     };
   };
 
-  programs.eza.enableFishIntegration = false;
+  home.sessionVariables = {
+    BROWSER = "open";
+    COLIMA_HOME = "${config.xdg.configHome}/colima";
+  };
+
+  # Locally compiled Emacs, ahead of the Homebrew one
+  home.sessionPath = [
+    "$HOME/Applications/Emacs.app/Contents/MacOS/bin"
+    "/Applications/Emacs.app/Contents/MacOS/bin"
+    "$HOME/Applications/Emacs.app/Contents/MacOS"
+    "/Applications/Emacs.app/Contents/MacOS"
+  ];
+
+  programs.fish.shellAbbrs = {
+    dnscache = "dscacheutil -flushcache";
+    e = "emacs -nw";
+    "o." = "open .";
+  };
+
+  programs.fish.functions.ssh-add-keys = {
+    description = "Add common SSH keys to agent";
+    body = ''
+      ssh-add ~/.ssh/id_ed25519 2>/dev/null
+      ssh-add ~/.ssh/id_rsa 2>/dev/null
+    '';
+  };
 
   home.packages = with pkgs; [
     # global nix utilities

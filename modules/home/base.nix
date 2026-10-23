@@ -1,4 +1,9 @@
-{ pkgs, inputs, ... }:
+{
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 
 {
   # Home Manager configuration shared by every host
@@ -12,6 +17,51 @@
   ];
 
   programs.home-manager.enable = true;
+
+  # Exports XDG_{CONFIG,CACHE,DATA,STATE}_HOME, and makes HM modules write to
+  # ~/.config instead of ~/Library/Application Support on macOS.
+  xdg.enable = true;
+
+  home.sessionVariables = {
+    EDITOR = "vim";
+    PAGER = "less -q";
+    LANG = "en_US.UTF-8";
+    LC_ALL = "en_US.UTF-8";
+    GIT_MERGE_AUTOEDIT = "0";
+  };
+
+  home.sessionPath = [
+    "$HOME/.local/bin"
+    "$HOME/.bin"
+  ];
+
+  programs.fish.shellAbbrs = {
+    ga = "git add";
+    gc = "git commit";
+    gd = "git diff";
+    gs = "git status";
+  };
+
+  programs.fzf = {
+    enable = true;
+    # Empty disables the widget: no ALT-C, and atuin owns CTRL-R
+    changeDirWidget.command = "";
+    historyWidget.command = "";
+    defaultOptions = [ "--no-height" ];
+    colors = {
+      fg = "-1";
+      bg = "-1";
+      hl = "136";
+      "fg+" = "254";
+      "bg+" = "-1";
+      "hl+" = "136";
+      info = "136";
+      prompt = "136";
+      pointer = "230";
+      marker = "230";
+      spinner = "136";
+    };
+  };
 
   programs.direnv = {
     enable = true;
@@ -39,7 +89,58 @@
   programs.eza = {
     enable = true;
     theme.punctuation.foreground = "Default";
+    # The functions below replace HM's ls/ll/la/lt aliases, which would
+    # otherwise shadow them.
+    enableFishIntegration = false;
   };
+  # eza reads ~/Library/Application Support on macOS unless told otherwise
+  home.sessionVariables.EZA_CONFIG_DIR = "${config.xdg.configHome}/eza";
+
+  programs.fish.functions =
+    builtins.mapAttrs
+      (_name: args: {
+        wraps = "eza";
+        inherit (args) description;
+        body = "eza ${args.flags} --group-directories-first $argv";
+      })
+      {
+        ls = {
+          description = "List files with eza";
+          flags = "-lF";
+        };
+        lsa = {
+          description = "List all files including hidden";
+          flags = "-lF --all --all";
+        };
+        ll = {
+          description = "List files with permissions";
+          flags = "-lF --octal-permissions";
+        };
+        l = {
+          description = "List files in simple format";
+          flags = "-1F";
+        };
+        lt = {
+          description = "List files in tree format (2 levels)";
+          flags = "-lF --tree --level=2";
+        };
+        ltl = {
+          description = "List files in full tree format";
+          flags = "-lF --tree";
+        };
+        lg = {
+          description = "List files with git status";
+          flags = "-lF --git --git-repos";
+        };
+        lm = {
+          description = "List files sorted by modification time";
+          flags = "-lF --sort=modified";
+        };
+        lz = {
+          description = "List files sorted by size";
+          flags = "-lF --sort=size";
+        };
+      };
 
   programs.attic-client = {
     enable = true;
@@ -97,7 +198,6 @@
     # Shell & Terminal
     btop
     fastfetch
-    fzf
     htop
     pstree
     tree
