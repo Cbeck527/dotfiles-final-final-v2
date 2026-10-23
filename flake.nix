@@ -142,6 +142,7 @@
           in
           {
             inherit (agentPkgs)
+              amp
               claude-code
               codex
               omp
