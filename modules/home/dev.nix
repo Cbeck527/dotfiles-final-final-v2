@@ -79,7 +79,7 @@ in
     shellcheck
 
     # Cloud & Infrastructure
-    awscli
+    awscli2
     docker
     docker-buildx
     kubectl
