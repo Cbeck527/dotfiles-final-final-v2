@@ -176,6 +176,17 @@
 
       # Linux Home Manager configurations
       homeConfigurations = {
+        bambi = home-manager.lib.homeManagerConfiguration {
+          pkgs = import inputs.nixpkgs {
+            system = "x86_64-linux";
+            overlays = hostOverlays;
+          };
+          extraSpecialArgs = { inherit inputs; };
+          modules = [
+            ./hosts/linux/bambi/default.nix
+          ];
+        };
+
         # Shared config for every Coder workspace; workspace hostnames vary, so
         # the Justfile selects this config when $CODER is set.
         coder = home-manager.lib.homeManagerConfiguration {
