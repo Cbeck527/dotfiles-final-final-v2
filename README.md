@@ -27,6 +27,6 @@ read on its own:
   Macs, and `dev` on machines I write code on.
 - `modules/shared/`: options and Nix settings used by every platform.
 - `packages/`: Home Manager program modules (fish, git, tmux, ...) and custom
-  package derivations (`tea`, `datadog-pup`).
+  package derivations (`gitea-cli`, `datadog-pup`).
 
 See [AGENTS.md](AGENTS.md) for the details.

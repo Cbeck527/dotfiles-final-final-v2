@@ -98,7 +98,7 @@
         self.overlays.fenix
         self.overlays.terraform-157
         self.overlays.llm-agents
-        self.overlays.tea
+        self.overlays.gitea-cli
         self.overlays.datadog-pup
       ];
 
@@ -140,8 +140,8 @@
               ;
           };
 
-        tea = _: prev: {
-          tea = prev.callPackage ./packages/tea.nix { };
+        gitea-cli = _: prev: {
+          gitea-cli = prev.callPackage ./packages/gitea-cli.nix { };
         };
 
         datadog-pup = _: prev: {

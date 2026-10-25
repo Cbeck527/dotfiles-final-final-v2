@@ -88,7 +88,7 @@
     macmon
 
     # Development Tools
-    tea
+    gitea-cli
 
     # Cloud & Infrastructure
     colima

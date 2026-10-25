@@ -58,7 +58,7 @@ in
 
     home.packages = with pkgs; [
       statix
-      tea
+      gitea-cli
     ];
 
     # Headless server: no gh credential helper, and no jj/delta/LFS

@@ -32,7 +32,7 @@ All hosts are declared in `flake.nix`. Darwin hosts build `aarch64-darwin` syste
 - `modules/nixos/user.nix`: the primary NixOS user account, built from `config.machine.*` (wheel, fish login shell, no password)
 - `packages/git.nix`, `packages/gpg.nix`, `packages/tmux.nix`, `packages/fish.nix`, `packages/bash.nix`, `packages/my-prompt.nix`, `packages/k9s.nix`: reusable Home Manager program modules
 - `packages/llms/default.nix`, `packages/llms/pi.nix`, `packages/llms/omp.nix`: shared LLM CLI package setup
-- `packages/tea.nix`, `packages/datadog-pup.nix`: `callPackage`-style derivations, exposed through the overlays of the same name in `flake.nix`
+- `packages/gitea-cli.nix`, `packages/datadog-pup.nix`: `callPackage`-style derivations, exposed through the overlays of the same name in `flake.nix`
 - `scripts/audit-flake-inputs.sh`: flake input audit helper
 - `etc/doc/`: documentation assets
 - `installer/`: Cloudflare Worker that renders the bootstrap script served at `dotfiles.cmb.software` (TypeScript, its own `flake.nix` and pnpm workspace; see `installer/README.md`)
@@ -85,7 +85,7 @@ The main inputs currently include:
 
 - `terraform-157`: exposes `terraform_1_5_7`
 - `llm-agents`: exposes `claude-code`, `codex`, `omp`, and `pi`
-- `tea`: calls `packages/tea.nix`, which packages prebuilt release binaries from the `chrisbecker/tea` fork (custom HTTP headers support), with a per-system asset/hash table
+- `gitea-cli`: calls `packages/gitea-cli.nix`, which packages the prebuilt release binaries of the official Gitea CLI (`gitea/cli`, binary `gt`), with a per-system asset/hash table
 - `datadog-pup`: calls `packages/datadog-pup.nix`, which packages the DataDog `pup` binary for macOS arm64
 - `fenix`
 
@@ -189,7 +189,7 @@ Both `nix.settings.keep-outputs` and `nix.settings.keep-derivations` are set to 
 - Prefer small, composable modules over large monolithic files.
 - Follow the existing naming pattern: `modules/<eval-type-or-concern>/<feature>.nix` and `hosts/<eval-type>/<hostname>/default.nix`.
 - Keep shell scripts in `bash` with `set -euo pipefail`.
-- When changing overlays in `flake.nix` or package sources in `packages/`, update every hash together (e.g. all per-system assets in `packages/tea.nix` when bumping its version).
+- When changing overlays in `flake.nix` or package sources in `packages/`, update every hash together (e.g. all per-system assets in `packages/gitea-cli.nix` when bumping its version).
 - When changing flake inputs, review both `flake.lock` and the output of `just audit`.
 
 ## Validation
