@@ -129,8 +129,11 @@ This config uses **Lix** instead of standard Nix: `nix.package = pkgs.lix` in `m
 ### Formatter: treefmt-nix
 `nix fmt` uses a `treefmt-nix` wrapper with `nixfmt` enabled. `flake.nix` declares the wrapper and its formatting check for `aarch64-darwin`, `aarch64-linux`, and `x86_64-linux`; `just fmt` runs the wrapper once for the repository.
 
+### Darwin sandbox: off until Lix supports macOS 27
+The Darwin Nix sandbox is temporarily `false`. macOS 27's `sandbox-exec` rejects Lix's generated profile (`invalid errno value #45`: `(with errno ENOTSUP)` is no longer allowed), so every sandboxed local build exits 1 with no build log. Tracked in [lix#1304](https://git.lix.systems/lix-project/lix/issues/1304); once a fixed Lix is in the lock, set it back to `"relaxed"`.
+
 ### Relaxed sandbox for Emacs
-Nix sandbox is set to `"relaxed"` (not the default `"true"`) because `modules/darwin/emacs-macport.nix` sets `__noChroot = true` on the Emacs derivation. Byte-compiling `url.el` triggers GnuTLS cert scanning of `/etc/ssl/certs`, which strict sandboxing blocks. If you change the Emacs derivation, this relationship must be maintained.
+The normal Darwin setting is `"relaxed"` (not the default `"true"`) because `modules/darwin/emacs-macport.nix` sets `__noChroot = true` on the Emacs derivation. Byte-compiling `url.el` triggers GnuTLS cert scanning of `/etc/ssl/certs`, which strict sandboxing blocks. If you change the Emacs derivation, this relationship must be maintained.
 
 ### Homebrew tap duplication
 Taps are declared in **two places** — this is intentional:

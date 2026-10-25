@@ -17,10 +17,14 @@
 
   nix = {
     settings = {
-      # "relaxed" allows per-derivation sandbox opt-out via __noChroot.
-      # Required for emacs-macport: byte-compiling url.el triggers GnuTLS
-      # cert scanning of /etc/ssl/certs, which strict sandboxing blocks.
-      sandbox = "relaxed";
+      # Sandbox disabled until https://git.lix.systems/lix-project/lix/issues/1304
+      # is fixed: macOS 27 rejects Lix's sandbox profile (`(with errno ENOTSUP)`
+      # is no longer an allowed errno), so every sandboxed build exits 1 with
+      # no log. Restore "relaxed" afterwards, not "true": "relaxed" allows
+      # per-derivation opt-out via __noChroot, which emacs-macport needs
+      # because byte-compiling url.el triggers GnuTLS cert scanning of
+      # /etc/ssl/certs, which strict sandboxing blocks.
+      sandbox = false;
 
       trusted-users = [ "@admin" ];
 
