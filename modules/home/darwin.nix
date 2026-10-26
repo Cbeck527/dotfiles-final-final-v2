@@ -101,6 +101,7 @@
     zstd
 
     # macOS
+    espanso
     minijinja
     pinentry_mac
     terminal-notifier
